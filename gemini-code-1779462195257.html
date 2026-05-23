@@ -1,0 +1,2338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>代面 InterviewAgent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #070a0f;
+      --bg-2: #0b1018;
+      --panel: rgba(16, 22, 32, 0.72);
+      --panel-strong: rgba(20, 28, 40, 0.88);
+      --line: rgba(220, 232, 255, 0.12);
+      --line-strong: rgba(220, 232, 255, 0.2);
+      --text: #eef5ff;
+      --muted: #9aa9bd;
+      --soft: #c7d3e3;
+      --blue: #7cb7ff;
+      --cyan: #53d6be;
+      --indigo: #aeb9ff;
+      --amber: #f7bf64;
+      --rose: #f09aae;
+      --green: #98d87f;
+      --radius: 8px;
+      --shadow: 0 22px 70px rgba(0, 0, 0, 0.36);
+      --ease: 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+      --cursor-x: 50vw;
+      --cursor-y: 50vh;
+      --cursor-opacity: 0;
+    }
+
+    * { box-sizing: border-box; }
+    html { min-height: 100%; background: var(--bg); }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        linear-gradient(180deg, rgba(12, 17, 25, 0.98), rgba(5, 8, 13, 1) 62%),
+        var(--bg);
+      overflow-x: hidden;
+      letter-spacing: 0;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 46px 46px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0.1) 76%, transparent);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      opacity: 0.35;
+      background-image:
+        radial-gradient(circle at 20% 10%, rgba(124, 183, 255, 0.14), transparent 24%),
+        linear-gradient(115deg, transparent 0 23%, rgba(83, 214, 190, 0.08) 25%, transparent 28% 55%, rgba(247, 191, 100, 0.08) 58%, transparent 61%),
+        repeating-linear-gradient(110deg, rgba(255,255,255,0.018) 0, rgba(255,255,255,0.018) 1px, transparent 1px, transparent 8px);
+    }
+
+    button {
+      color: inherit;
+      font: inherit;
+    }
+
+    .spectral-lines {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .cursor-glow {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: var(--cursor-opacity);
+      background:
+        radial-gradient(
+          circle 360px at var(--cursor-x) var(--cursor-y),
+          rgba(124, 183, 255, 0.13),
+          rgba(83, 214, 190, 0.055) 34%,
+          transparent 72%
+        );
+      mix-blend-mode: screen;
+      transition: opacity 220ms ease;
+    }
+
+    .spectral-lines path {
+      fill: none;
+      stroke-width: 1.2;
+      stroke-linecap: round;
+      stroke-dasharray: 12 18;
+      animation: drift 16s linear infinite;
+    }
+
+    @keyframes drift {
+      from { stroke-dashoffset: 0; }
+      to { stroke-dashoffset: -260; }
+    }
+
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) auto minmax(120px, 1fr);
+      gap: 20px;
+      align-items: center;
+      padding: 18px clamp(20px, 4vw, 48px);
+      background: linear-gradient(180deg, rgba(7, 10, 15, 0.92), rgba(7, 10, 15, 0.66));
+      border-bottom: 1px solid rgba(220, 232, 255, 0.08);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 10px;
+      height: 10px;
+      border-radius: 99px;
+      background: var(--blue);
+      box-shadow: 0 0 18px rgba(124, 183, 255, 0.85);
+      flex: 0 0 auto;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .version-pill {
+      display: inline-flex;
+      align-items: center;
+      height: 24px;
+      padding: 0 9px;
+      border: 1px solid var(--line);
+      border-radius: 99px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .top-nav {
+      display: inline-grid;
+      grid-template-columns: repeat(3, minmax(104px, 1fr));
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.045);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    .nav-btn {
+      position: relative;
+      min-height: 36px;
+      min-width: 104px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: 999px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      transition: color var(--ease), background var(--ease), box-shadow var(--ease);
+    }
+
+    .nav-btn::after {
+      content: "";
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      bottom: 4px;
+      height: 2px;
+      border-radius: 99px;
+      opacity: 0;
+      transform: scaleX(0.25);
+      background: linear-gradient(90deg, var(--blue), var(--cyan), var(--amber));
+      transition: opacity var(--ease), transform var(--ease);
+    }
+
+    .nav-btn:hover { color: var(--soft); }
+    .nav-btn.active {
+      color: #ffffff;
+      background: rgba(255,255,255,0.07);
+      box-shadow: 0 0 0 1px rgba(220,232,255,0.12), 0 12px 26px rgba(0,0,0,0.18);
+    }
+    .nav-btn.active::after {
+      opacity: 1;
+      transform: scaleX(1);
+    }
+
+    .header-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .lang-btn {
+      min-height: 36px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.045);
+      color: var(--soft);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 800;
+      transition: border-color var(--ease), background var(--ease), color var(--ease);
+    }
+
+    .lang-btn:hover {
+      border-color: var(--line-strong);
+      background: rgba(255,255,255,0.075);
+      color: #fff;
+    }
+
+    .app-shell {
+      position: relative;
+      z-index: 1;
+      width: min(1180px, calc(100vw - 40px));
+      margin: 0 auto;
+      padding: 48px 0 72px;
+    }
+
+    .page-intro {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 28px;
+      align-items: end;
+      padding: 26px 0 30px;
+      border-bottom: 1px solid rgba(220,232,255,0.08);
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .page-title {
+      margin: 0;
+      color: #fff;
+      font-size: clamp(30px, 4vw, 38px);
+      line-height: 1.08;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .page-subtitle {
+      max-width: 740px;
+      margin: 14px 0 0;
+      color: var(--soft);
+      font-size: 16px;
+      line-height: 1.72;
+    }
+
+    .signal-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(116px, 1fr));
+      gap: 8px;
+      min-width: 360px;
+    }
+
+    .signal {
+      min-height: 74px;
+      padding: 12px;
+      border: 1px solid rgba(220,232,255,0.1);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.035);
+    }
+
+    .signal strong {
+      display: block;
+      color: #fff;
+      font-size: 20px;
+      line-height: 1.1;
+      font-weight: 800;
+    }
+
+    .signal span {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      font-weight: 600;
+    }
+
+    .content-stage {
+      padding-top: 30px;
+      animation: sectionIn 220ms ease both;
+    }
+
+    @keyframes sectionIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .module-stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .module-item {
+      position: relative;
+      isolation: isolate;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(18, 25, 36, 0.78), rgba(12, 17, 25, 0.72));
+      box-shadow: 0 14px 40px rgba(0,0,0,0.18);
+      overflow: hidden;
+      transition: border-color var(--ease), background var(--ease), box-shadow var(--ease);
+    }
+
+    .module-item::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      z-index: -1;
+      opacity: 0;
+      background:
+        radial-gradient(circle at 18% 0%, rgba(124,183,255,0.18), transparent 34%),
+        linear-gradient(135deg, rgba(124,183,255,0.12), transparent 46%);
+      transition: opacity 420ms ease;
+    }
+
+    .module-item:hover {
+      border-color: rgba(124,183,255,0.26);
+      box-shadow: 0 18px 52px rgba(0,0,0,0.26);
+    }
+
+    .module-item.expanded {
+      border-color: var(--accent-border);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.035)),
+        linear-gradient(135deg, var(--accent-soft), transparent 42%);
+      box-shadow: var(--shadow);
+    }
+
+    .module-item.expanded::before {
+      opacity: 1;
+    }
+
+    .module-header {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      min-height: 112px;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      padding: 20px 22px;
+      border: 0;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .module-icon {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--accent-border);
+      border-radius: var(--radius);
+      background: var(--accent-soft);
+      font-size: 17px;
+    }
+
+    .module-kicker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 7px;
+    }
+
+    .module-title {
+      color: #fff;
+      font-size: 22px;
+      line-height: 1.22;
+      font-weight: 800;
+    }
+
+    .module-code {
+      display: inline-flex;
+      align-items: center;
+      min-height: 20px;
+      padding: 0 8px;
+      border: 1px solid var(--accent-border);
+      border-radius: 99px;
+      color: #bfdcff;
+      background: rgba(124,183,255,0.08);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .module-subtitle {
+      margin: 0;
+      color: var(--soft);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .chevron {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      transition: transform var(--ease), color var(--ease), border-color var(--ease);
+    }
+
+    .module-item.expanded .chevron {
+      transform: rotate(180deg);
+      color: #fff;
+      border-color: var(--accent-border);
+    }
+
+    .module-body-shell {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 460ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .module-item.expanded .module-body-shell { grid-template-rows: 1fr; }
+    .module-body {
+      min-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(-6px);
+      transition: opacity 260ms ease, transform 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .module-item.expanded .module-body {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .module-detail {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 28px;
+      padding: 0 22px 22px 74px;
+    }
+
+    .detail-column {
+      display: grid;
+      gap: 22px;
+    }
+
+    .detail-group {
+      padding-left: 16px;
+      border-left: 2px solid var(--accent-border);
+    }
+
+    .detail-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 9px;
+      color: #fff;
+      font-size: 16px;
+      line-height: 1.3;
+      font-weight: 800;
+    }
+
+    .detail-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 99px;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+      flex: 0 0 auto;
+    }
+
+    .detail-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+
+    .detail-list li {
+      position: relative;
+      padding-left: 15px;
+      color: var(--soft);
+      font-size: 14.5px;
+      line-height: 1.62;
+    }
+
+    .detail-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.75em;
+      width: 4px;
+      height: 4px;
+      border-radius: 99px;
+      background: var(--accent);
+      opacity: 0.85;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 22px 24px 74px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border: 1px solid rgba(220,232,255,0.11);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      color: var(--soft);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .tech-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .flow-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(16, 23, 33, 0.8), rgba(10, 15, 22, 0.76));
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .flow-heading {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+      padding: 20px 22px 12px;
+      border-bottom: 1px solid rgba(220,232,255,0.08);
+    }
+
+    .flow-heading h3 {
+      margin: 0;
+      color: #fff;
+      font-size: 22px;
+      line-height: 1.22;
+      font-weight: 800;
+    }
+
+    .flow-heading p {
+      max-width: 560px;
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 14.5px;
+      line-height: 1.62;
+    }
+
+    .flow-svg-wrap {
+      overflow-x: auto;
+      padding: 18px 12px;
+      border-top: 1px solid rgba(220,232,255,0.08);
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+        #0e141c;
+      background-size: 34px 34px;
+    }
+
+    .flow-svg {
+      display: block;
+      width: min(100%, 760px);
+      min-width: 640px;
+      height: auto;
+      margin: 0 auto;
+      overflow: visible;
+    }
+
+    .flow-svg text {
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      pointer-events: none;
+      letter-spacing: 0;
+    }
+
+    .flow-svg .node-text {
+      paint-order: stroke;
+      stroke: rgba(10, 14, 20, 0.18);
+      stroke-width: 1.6px;
+      stroke-linejoin: round;
+    }
+
+    .flow-svg .section-label,
+    .flow-svg .legend-text,
+    .flow-svg .edge-label {
+      paint-order: stroke;
+      stroke: #0e141c;
+      stroke-width: 5px;
+      stroke-linejoin: round;
+    }
+
+    .flow-svg .connector,
+    .flow-svg .node-rect,
+    .flow-svg .node-diamond,
+    .flow-svg .section-rect,
+    .flow-svg .legend-swatch {
+      vector-effect: non-scaling-stroke;
+    }
+
+    .logic-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .logic-node {
+      min-height: 104px;
+      padding: 16px;
+      border: 1px solid rgba(220,232,255,0.11);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.028));
+    }
+
+    .logic-node b {
+      display: block;
+      color: #fff;
+      font-size: 16px;
+      line-height: 1.3;
+      font-weight: 800;
+    }
+
+    .logic-node span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .manual-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .manual-block {
+      min-height: 182px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.025)),
+        rgba(10, 15, 22, 0.62);
+      box-shadow: 0 14px 44px rgba(0,0,0,0.18);
+    }
+
+    .manual-block h3 {
+      margin: 0;
+      color: #fff;
+      font-size: 21px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+
+    .manual-block p {
+      margin: 10px 0 0;
+      color: var(--soft);
+      font-size: 14.5px;
+      line-height: 1.65;
+    }
+
+    .manual-list {
+      margin: 14px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+
+    .manual-list li {
+      position: relative;
+      padding-left: 15px;
+      color: var(--soft);
+      font-size: 14.5px;
+      line-height: 1.55;
+    }
+
+    .manual-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.75em;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--cyan);
+    }
+
+    .demo-showcase {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.024)),
+        rgba(10, 15, 22, 0.66);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+
+    .demo-showcase-header {
+      padding: 20px;
+      border-bottom: 1px solid rgba(220,232,255,0.09);
+    }
+
+    .demo-showcase-header h3 {
+      margin: 0;
+      color: #fff;
+      font-size: 21px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+
+    .demo-showcase-header p {
+      max-width: 760px;
+      margin: 10px 0 0;
+      color: var(--soft);
+      font-size: 14.5px;
+      line-height: 1.65;
+    }
+
+    .demo-shot {
+      margin: 0;
+      padding: 18px;
+    }
+
+    .demo-shot img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border: 1px solid rgba(220,232,255,0.12);
+      border-radius: var(--radius);
+      background: rgba(0,0,0,0.22);
+    }
+
+    .demo-shot figcaption {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .cursor-tip {
+      position: fixed;
+      z-index: 50;
+      max-width: 260px;
+      padding: 9px 12px;
+      border: 1px solid rgba(220,232,255,0.15);
+      border-radius: var(--radius);
+      background: rgba(7, 10, 15, 0.92);
+      color: #fff;
+      box-shadow: 0 16px 50px rgba(0,0,0,0.45);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(4px) scale(0.98);
+      transition: opacity var(--ease), transform var(--ease);
+    }
+
+    .cursor-tip.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .tip-main {
+      display: block;
+      font-size: 12px;
+      line-height: 1.3;
+      font-weight: 800;
+    }
+
+    .tip-sub {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 960px) {
+      .app-header {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .top-nav {
+        width: 100%;
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .nav-btn {
+        min-width: 0;
+        padding-inline: 8px;
+      }
+
+      .header-actions {
+        position: absolute;
+        right: 20px;
+        top: 18px;
+      }
+
+      .page-intro {
+        grid-template-columns: 1fr;
+      }
+
+      .signal-strip {
+        min-width: 0;
+        width: 100%;
+      }
+
+      .module-detail,
+      .manual-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .app-shell {
+        width: min(100vw - 28px, 1180px);
+        padding-top: 28px;
+      }
+
+      .brand-title {
+        font-size: 12px;
+      }
+
+      .version-pill {
+        display: none;
+      }
+
+      .top-nav {
+        grid-template-columns: 1fr;
+        border-radius: 14px;
+      }
+
+      .nav-btn {
+        border-radius: 10px;
+      }
+
+      .header-actions {
+        position: static;
+        justify-content: flex-start;
+      }
+
+      .page-title {
+        font-size: 30px;
+      }
+
+      .signal-strip,
+      .logic-row {
+        grid-template-columns: 1fr;
+      }
+
+      .module-header {
+        grid-template-columns: auto minmax(0, 1fr);
+        min-height: 0;
+      }
+
+      .chevron {
+        grid-column: 1 / -1;
+        justify-self: start;
+      }
+
+      .module-detail,
+      .tag-row {
+        padding-left: 22px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cursor-glow {
+        display: none;
+      }
+
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <svg class="spectral-lines" viewBox="0 0 1440 920" aria-hidden="true">
+    <path d="M-40 210 C 210 120, 392 310, 660 230 S 1080 126, 1480 250" stroke="rgba(124,183,255,0.2)" />
+    <path d="M-70 520 C 220 640, 410 428, 710 510 S 1040 650, 1510 420" stroke="rgba(83,214,190,0.16)" />
+    <path d="M-80 760 C 210 682, 450 800, 760 710 S 1160 590, 1510 700" stroke="rgba(247,191,100,0.14)" />
+  </svg>
+  <div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
+
+  <header class="app-header">
+    <div class="brand" aria-label="InterviewAgent">
+      <span class="brand-mark"></span>
+      <h1 class="brand-title">代面 InterviewAgent</h1>
+      <span class="version-pill" id="version-pill">V2.0 规划</span>
+    </div>
+    <nav class="top-nav" id="top-nav" aria-label="主导航"></nav>
+    <div class="header-actions">
+      <button id="global-lang-btn" class="lang-btn" type="button">中 / EN</button>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <section class="page-intro" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow" id="page-kicker"></p>
+        <h2 class="page-title" id="page-title"></h2>
+        <p class="page-subtitle" id="page-subtitle"></p>
+      </div>
+      <div class="signal-strip" id="signal-strip" aria-label="Section signals"></div>
+    </section>
+    <section class="content-stage" id="main-content" aria-live="polite"></section>
+  </main>
+
+  <div class="cursor-tip" id="cursor-tip">
+    <span class="tip-main" id="tip-main-text"></span>
+    <span class="tip-sub" id="tip-sub-text"></span>
+  </div>
+
+  <script>
+    const SVG_NS = "http://www.w3.org/2000/svg";
+
+    const i18n = {
+      zh: {
+        documentTitle: "代面 InterviewAgent",
+        version: "V2.0 规划",
+        nav: {
+          highlights: "产品亮点",
+          tech: "技术链路",
+          manual: "产品说明书"
+        },
+        tip: {
+          main: "查看对应模块",
+          sub: "技术节点会同步定位到产品亮点"
+        },
+        sections: {
+          highlights: {
+            kicker: "PRODUCT HIGHLIGHTS",
+            title: "产品亮点",
+            subtitle: "把真实面试里的压力、追问、复盘和长期改进装进一个多 Agent 闭环，让训练不再停留在题库练习。",
+            signals: [
+              { value: "3", label: "核心能力模块" },
+              { value: "Multi", label: "Agent 协同规划" },
+              { value: "Evidence", label: "证据驱动评估" }
+            ]
+          },
+          tech: {
+            kicker: "SYSTEM FLOW",
+            title: "技术链路",
+            subtitle: "用两条链路呈现产品运行方式：一次模拟面试如何被规划、执行和评估，以及历史结果如何沉淀到后续咨询。",
+            signals: [
+              { value: "01", label: "面试链路" },
+              { value: "02", label: "逻辑关系" },
+              { value: "03", label: "咨询记忆" }
+            ]
+          },
+          manual: {
+            kicker: "PRODUCT MANUAL",
+            title: "产品说明书",
+            subtitle: "围绕用户输入、面试执行、报告输出和持续改进，形成一份可交付、可复盘、可扩展的产品说明。",
+            signals: [
+              { value: "Input", label: "配置输入" },
+              { value: "Run", label: "面试执行" },
+              { value: "Loop", label: "改进闭环" }
+            ]
+          }
+        },
+        highlights: [
+          {
+            icon: "🎯",
+            title: "概述与目标",
+            code: "CORE",
+            subtitle: "构建接近真实场景的多 Agent 闭环训练体验",
+            tone: "overview",
+            columns: [
+              [
+                { title: "背景痛点", items: ["练习缺少真实压力环境", "复盘过度依赖主观感受", "长期准备过程难以沉淀数据"] }
+              ],
+              [
+                { title: "核心目标清单", items: ["构建模拟/练习双模引擎", "多 Agent 协同设定动态主题", "生成多维量化评估报告"] }
+              ]
+            ],
+            tags: ["真实压力", "闭环训练", "长期沉淀"]
+          },
+          {
+            icon: "🧠",
+            title: "多Agent面试实战",
+            code: "EXECUTION",
+            subtitle: "把配置、规划、执行和追问路由合并为一条可运行的实战链路",
+            tone: "execution",
+            columns: [
+              [
+                { title: "面试创建与配置", items: ["目标公司与岗位", "JD（岗位描述）与个人简历", "面试类型与压力难度", "底层模型与语音引擎选项"] },
+                { title: "AI 智囊团圆桌", items: ["JD 解构：提取核心胜任力与硬性要求", "简历深挖：寻找履历漏洞与可验证证据", "面试策略官与风险质疑官协同决策"] }
+              ],
+              [
+                { title: "面试执行引擎", items: ["高压人设模拟与动态倒计时", "识别并打断回避型或兜圈子作答", "精准的容错与防竞态机制"] },
+                { title: "动态追问路由", items: ["三维决策：深挖、切换、结束", "智能切断机制避免无效 Token 消耗", "主题覆盖度实时评估"] }
+              ]
+            ],
+            tags: ["安全配置", "Agent 圆桌", "动态追问", "压力模拟"]
+          },
+          {
+            icon: "📊",
+            title: "评估和改进",
+            code: "FEEDBACK",
+            subtitle: "把结构化报告、行为倾向和改进建议合并成可执行的复盘系统",
+            tone: "feedback",
+            columns: [
+              [
+                { title: "结构化综合报告", items: ["岗位匹配度、完整度、逻辑性、专业度、沟通表达五维评分", "每个维度提供扣分原因与原文证据", "提取结构化优势、短板和方法论建议"] },
+                { title: "智能批注与逐轮切片", items: ["按轮次定位关键片段", "基于语义块分割避免超长引用导致幻觉", "给出推荐回答和下一轮训练方向"] }
+              ],
+              [
+                { title: "行为倾向与风格", items: ["动态倾向雷达展示具体环境下的表现特征", "分析个人风格与目标企业文化的适配度", "强制引用本场面试原话作为判断支撑"] }
+              ]
+            ],
+            tags: ["量化评分", "原文证据", "风格评估", "改进建议"]
+          },
+          {
+            icon: "✦",
+            title: "我们的愿景",
+            code: "VISION",
+            subtitle: "拆解面试黑盒，把反馈、策略和长期能力塑造还给候选人",
+            tone: "vision",
+            columns: [
+              [
+                { title: "面试，一定要是黑盒吗？", items: ["企业出于风险控制和保密的考量，通常不会向候选人披露面试细节与评价体系。", "随着求职竞争加剧与 B 端 AI 面试产品广泛落地，候选人往往陷入缺乏反馈的恶性循环。", "当候选人难以复盘自己的面试输出，长期准备就很难沉淀为真实的面试竞争力，甚至会出现面的越多、面得越差的问题。"] }
+              ],
+              [
+                { title: "代面，能解决什么问题？", items: ["代面 InterviewAgent 是基于 C 端体验开发的 AI as a Service（AIssS）产品，提供面试模拟 + 战略咨询服务。", "我们希望高效拆解面试黑盒，增加求职流程透明度，针对性梳理面试卡点，快速提升面试表现。", "我们既提供开箱即用的应试技巧，也重视长期能力塑造；在面试这条路上，我们坚信技术平权，也很高兴能和大家一起迈出一步。"] }
+              ]
+            ],
+            tags: ["技术平权", "黑盒拆解", "C端体验", "长期能力"]
+          }
+        ],
+        tech: {
+          logic: [
+            { title: "准备 → 规划", text: "用户输入岗位目标，Agent 将 JD、简历和面试配置转化为主题优先级。" },
+            { title: "执行 → 路由", text: "面试官持续提问，追问 Agent 根据回答质量决定深挖、切换或结束。" },
+            { title: "结果 → 沉淀", text: "报告把评分、证据和建议结构化，成为后续咨询与训练的上下文。" }
+          ],},
+        manual: [
+          {
+            title: "产品定位",
+            text: "代面是一套面向求职者的 AI 面试训练系统，用多 Agent 协同模拟真实面试环境，并把每次训练转化为可追踪的数据资产。",
+            items: ["适合正式面试前的高压演练", "适合围绕目标岗位做针对性补强", "适合长期记录能力变化和高频失误"]
+          },
+          {
+            title: "输入配置",
+            text: "用户从安全隔离的配置入口提交目标公司、岗位、JD、个人简历、面试类型、难度、模型和语音选项。",
+            items: ["岗位与简历共同决定问题方向", "难度与压力等级影响追问强度", "配置只服务当前用户的数据沙盒"]
+          },
+          {
+            title: "面试过程",
+            text: "系统先由 AI 智囊团规划主题，再由面试执行引擎推进问答，追问路由根据回答状态持续调整路径。",
+            items: ["开场问题来自岗位和简历的强对齐", "回答模糊时进入深挖", "主题覆盖后切换，达到阈值后结束"]
+          },
+          {
+            title: "报告输出",
+            text: "面试结束后输出结构化综合报告，包含维度评分、逐轮点评、原文证据、推荐回答和可执行改进建议。",
+            items: ["扣分必须绑定原文证据", "建议按能力短板组织", "行为倾向以事实表达，不做绝对人格定型"]
+          },
+          {
+            title: "持续改进",
+            text: "报告和咨询结论会沉淀为长期记忆摘要，下一次训练或咨询可以继续参考，形成持续优化闭环。",
+            items: ["结构化事实记忆保存高价值证据", "紧凑画像降低上下文成本", "阶段性复盘帮助调整训练计划"]
+          },
+          {
+            title: "基于 Vercel 平台的 Web 应用交付",
+            text: "代面 InterviewAgent 已通过 Web 应用形式完成交付，全流程模拟面试与战略咨询服务均已上线。",
+            items: ["用户可直接通过浏览器访问产品", "全流程模拟面试已经上线", "战略咨询服务已经上线"]
+          }
+        ],
+        demo: {
+          title: "Demo 截图",
+          text: "截图文件已随网页一起放入 GitHub Pages 仓库，页面通过相对路径加载，分享链接时无需依赖本地文件。",
+          caption: "全流程模拟面试 Demo 截图",
+          image: "assets/demo/interview-demo.png"
+        }
+      },
+      en: {
+        documentTitle: "InterviewAgent",
+        version: "V2.0 Plan",
+        nav: {
+          highlights: "Highlights",
+          tech: "System Flow",
+          manual: "Manual"
+        },
+        tip: {
+          main: "Open related module",
+          sub: "Technical nodes map back to product highlights"
+        },
+        sections: {
+          highlights: {
+            kicker: "PRODUCT HIGHLIGHTS",
+            title: "Product Highlights",
+            subtitle: "A multi-agent closed loop that brings pressure, follow-ups, review, and long-term improvement into interview training.",
+            signals: [
+              { value: "3", label: "Core modules" },
+              { value: "Multi", label: "Agent planning" },
+              { value: "Evidence", label: "Evidence-based review" }
+            ]
+          },
+          tech: {
+            kicker: "SYSTEM FLOW",
+            title: "System Flow",
+            subtitle: "Two flows explain how a mock interview is planned, executed, and evaluated, and how its results become context for future consulting.",
+            signals: [
+              { value: "01", label: "Interview flow" },
+              { value: "02", label: "Logic bridge" },
+              { value: "03", label: "Consulting memory" }
+            ]
+          },
+          manual: {
+            kicker: "PRODUCT MANUAL",
+            title: "Product Manual",
+            subtitle: "A practical product brief covering user input, interview execution, report output, and the continuous improvement loop.",
+            signals: [
+              { value: "Input", label: "Configuration" },
+              { value: "Run", label: "Interview run" },
+              { value: "Loop", label: "Improvement loop" }
+            ]
+          }
+        },
+        highlights: [
+          {
+            icon: "🎯",
+            title: "Overview & Goals",
+            code: "CORE",
+            subtitle: "Build a realistic multi-agent closed-loop training experience",
+            tone: "overview",
+            columns: [
+              [
+                { title: "Pain Points", items: ["Practice lacks real interview pressure", "Reviews rely too heavily on subjective feeling", "Long-term preparation rarely turns into usable data"] }
+              ],
+              [
+                { title: "Core Goals", items: ["Build mock and practice modes", "Use multiple agents to set dynamic themes", "Generate multidimensional quantitative reports"] }
+              ]
+            ],
+            tags: ["Real pressure", "Closed loop", "Long-term memory"]
+          },
+          {
+            icon: "🧠",
+            title: "Multi-Agent Interview Practice",
+            code: "EXECUTION",
+            subtitle: "Merge setup, planning, execution, and follow-up routing into one runnable practice loop",
+            tone: "execution",
+            columns: [
+              [
+                { title: "Interview Setup", items: ["Target company and role", "JD and personal resume", "Interview type and stress level", "Base model and voice engine options"] },
+                { title: "AI Roundtable", items: ["JD analysis extracts core competencies and hard requirements", "Resume probing finds gaps and verifiable evidence", "Strategist and challenger agents form a shared plan"] }
+              ],
+              [
+                { title: "Execution Engine", items: ["Stress persona simulation and live countdowns", "Detect and interrupt evasive or circular answers", "Precise fault tolerance and anti-race mechanisms"] },
+                { title: "Dynamic Follow-up Routing", items: ["Three actions: deep dive, switch, end", "Forced switch avoids wasted token cost", "Topic coverage is evaluated in real time"] }
+              ]
+            ],
+            tags: ["Secure setup", "Agent roundtable", "Dynamic follow-up", "Stress simulation"]
+          },
+          {
+            icon: "📊",
+            title: "Evaluation & Improvement",
+            code: "FEEDBACK",
+            subtitle: "Turn structured reports, behavioral tendencies, and recommendations into an actionable review system",
+            tone: "feedback",
+            columns: [
+              [
+                { title: "Comprehensive Report", items: ["Five scores: role fit, completeness, logic, professionalism, communication", "Each dimension includes deductions and transcript evidence", "Extract strengths, weaknesses, and methodological advice"] },
+                { title: "Smart Annotation", items: ["Locate key moments by interview round", "Semantic slicing avoids hallucinations from long quotes", "Provide suggested answers and next training focus"] }
+              ],
+              [
+                { title: "Behavioral Style", items: ["Dynamic radar shows performance traits in context", "Analyze fit with the target company culture", "Judgments must cite the current interview transcript"] }
+              ]
+            ],
+            tags: ["Quant scoring", "Transcript evidence", "Style analysis", "Actionable advice"]
+          },
+          {
+            icon: "✦",
+            title: "Our Vision",
+            code: "VISION",
+            subtitle: "Open the interview black box and return feedback, strategy, and long-term capability building to candidates",
+            tone: "vision",
+            columns: [
+              [
+                { title: "Does interviewing have to be a black box?", items: ["Companies usually avoid disclosing interview details and evaluation systems because of risk control and confidentiality.", "As hiring competition intensifies and B-side AI interview products become common, candidates can fall into a feedback-poor cycle.", "Without a way to review their own interview output, long-term preparation rarely becomes real interview competitiveness. In the worst case, more interviews can lead to worse performance."] }
+              ],
+              [
+                { title: "What can InterviewAgent solve?", items: ["InterviewAgent is an AI as a Service (AIssS) product designed from the candidate-side experience, combining mock interviews with strategic consulting.", "It aims to efficiently unpack the interview black box, make the job-search process more transparent, identify blockers, and improve performance quickly.", "We provide ready-to-use interview tactics while also caring about long-term capability building. On this road, we believe in technology equity and are glad to take this step with everyone."] }
+              ]
+            ],
+            tags: ["Technology equity", "Black box clarity", "Candidate-first", "Long-term growth"]
+          }
+        ],
+        tech: {
+          logic: [
+            { title: "Prepare → Plan", text: "The user's target role becomes theme priorities through JD, resume, and interview configuration analysis." },
+            { title: "Run → Route", text: "The interviewer asks live questions while the routing agent decides whether to probe, switch, or end." },
+            { title: "Result → Memory", text: "Scores, evidence, and advice are structured into reusable context for future consulting and training." }
+          ],},
+        manual: [
+          {
+            title: "Positioning",
+            text: "InterviewAgent is an AI interview training system for candidates. Multiple agents simulate realistic interview pressure and turn every session into trackable data.",
+            items: ["High-pressure rehearsal before real interviews", "Role-specific preparation for target jobs", "Long-term tracking of capability changes and repeated mistakes"]
+          },
+          {
+            title: "Input Setup",
+            text: "Users submit target company, role, JD, resume, interview type, difficulty, model, and voice options through an isolated setup entry.",
+            items: ["Role and resume jointly determine question direction", "Difficulty and stress level affect follow-up intensity", "Configuration stays inside the user's data sandbox"]
+          },
+          {
+            title: "Interview Run",
+            text: "The AI roundtable plans themes first, then the execution engine drives the interview while the follow-up router adjusts the path.",
+            items: ["Opening questions align role requirements with resume evidence", "Vague answers trigger deeper probing", "Covered topics switch forward and threshold conditions end the run"]
+          },
+          {
+            title: "Report Output",
+            text: "After the interview, the system outputs a structured report with scores, comments, transcript evidence, suggested answers, and improvement advice.",
+            items: ["Deductions must cite transcript evidence", "Advice is organized around capability gaps", "Behavioral tendencies stay factual instead of rigid personality typing"]
+          },
+          {
+            title: "Continuous Improvement",
+            text: "Reports and consulting conclusions are compressed into long-term memory summaries, so the next training or consulting session can continue from them.",
+            items: ["Structured fact memory stores high-value evidence", "Compact profiles reduce context cost", "Stage reviews help update the training plan"]
+          },
+          {
+            title: "Web App Delivery on Vercel",
+            text: "InterviewAgent has been delivered as a web application, with the full mock interview flow and strategic consulting service already live.",
+            items: ["Users can access the product directly in a browser", "The full mock interview flow is live", "The strategic consulting service is live"]
+          }
+        ],
+        demo: {
+          title: "Demo Screenshot",
+          text: "The screenshot is stored in the GitHub Pages repository and loaded with a relative path, so the shared page does not depend on local files.",
+          caption: "Full mock interview demo screenshot",
+          image: "assets/demo/interview-demo.png"
+        }
+      }
+    };
+
+    const toneVars = {
+      overview: { accent: "#7cb7ff", soft: "rgba(124,183,255,0.12)", border: "rgba(124,183,255,0.36)" },
+      execution: { accent: "#7cb7ff", soft: "rgba(124,183,255,0.12)", border: "rgba(124,183,255,0.36)" },
+      feedback: { accent: "#7cb7ff", soft: "rgba(124,183,255,0.12)", border: "rgba(124,183,255,0.36)" },
+      vision: { accent: "#7cb7ff", soft: "rgba(124,183,255,0.12)", border: "rgba(124,183,255,0.36)" }
+    };
+
+    const visualMeta = {
+      highlights: {
+        kicker: "PRODUCT HIGHLIGHTS",
+        signals: [
+          { value: "3", label: "核心能力模块" },
+          { value: "Multi", label: "Agent 协同规划" },
+          { value: "Evidence", label: "证据驱动评估" }
+        ]
+      },
+      tech: {
+        kicker: "SYSTEM FLOW",
+        signals: [
+          { value: "01", label: "面试链路" },
+          { value: "02", label: "逻辑关系" },
+          { value: "03", label: "咨询记忆" }
+        ]
+      },
+      manual: {
+        kicker: "PRODUCT MANUAL",
+        signals: [
+          { value: "Input", label: "配置输入" },
+          { value: "Run", label: "面试执行" },
+          { value: "Loop", label: "改进闭环" }
+        ]
+      }
+    };
+
+    let currentLang = "zh";
+    let activeSection = "highlights";
+    let expandedHighlights = new Set([0, 1, 2, 3]);
+
+    function copy() {
+      return i18n[currentLang];
+    }
+
+    function escapeHTML(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function svgEl(tag, attrs = {}, children = []) {
+      const el = document.createElementNS(SVG_NS, tag);
+      Object.entries(attrs).forEach(([key, value]) => {
+        if (value === undefined || value === null || value === false) return;
+        if (key === "className") el.setAttribute("class", value);
+        else if (key === "text") el.textContent = value;
+        else el.setAttribute(key, String(value));
+      });
+      children.forEach((child) => el.appendChild(child));
+      return el;
+    }
+
+
+    /* Complete flowcharts imported from /Users/pb/Downloads/代面Agent流程图.html */
+    const PALETTE = {
+      user: {
+        fill: "#24303d",
+        fill2: "#18222d",
+        stroke: "#8ba0b6",
+        text: "#edf4fb",
+        sub: "#bcc9d7",
+        tint: "#223041"
+      },
+      read: {
+        fill: "#123b63",
+        fill2: "#0d2b49",
+        stroke: "#70b8ee",
+        text: "#d9ecff",
+        sub: "#91c8f7",
+        tint: "#102f4d"
+      },
+      think: {
+        fill: "#3f337a",
+        fill2: "#2c245d",
+        stroke: "#afa8ec",
+        text: "#eeeaff",
+        sub: "#c7bef6",
+        tint: "#342b68"
+      },
+      agent: {
+        fill: "#0b5f4f",
+        fill2: "#084438",
+        stroke: "#5dd3b0",
+        text: "#d8fff1",
+        sub: "#74d8ba",
+        tint: "#0b3f38"
+      },
+      route: {
+        fill: "#7a321e",
+        fill2: "#582313",
+        stroke: "#f49a73",
+        text: "#ffe0d2",
+        sub: "#ffb08e",
+        tint: "#512319"
+      },
+      report: {
+        fill: "#76480d",
+        fill2: "#573507",
+        stroke: "#f2ad45",
+        text: "#ffe7b6",
+        sub: "#f6bf68",
+        tint: "#4f350e"
+      },
+      success: {
+        fill: "#315a16",
+        fill2: "#233f10",
+        stroke: "#a8cf6e",
+        text: "#e2f5c3",
+        sub: "#bdda87",
+        tint: "#2e4717"
+      }
+    };
+
+    const neutral = {
+      label: "#c9d2df",
+      line: "#8ea2ba"
+    };
+
+    const I18N = {
+      en: {
+        "流程图重绘 - 面试链路与战略咨询记忆链路": "Flowchart Redesign - Interview and Strategy Memory Flows",
+        "面试链路与战略咨询记忆链路": "Interview Flow and Strategy Memory Flow",
+        "基于原始两个流程图重绘为 HTML 内联 SVG，保留节点、分支、回路、图例和原有说明，同时统一节点配色、连接线和箭头样式。": "Redrawn as inline SVG in HTML while preserving the original nodes, branches, loops, legends, and descriptions, with refined colors, connectors, and arrow styling.",
+        "面试链路": "Interview Flow",
+        "战略咨询记忆链路": "Strategy Memory Flow",
+        "面试链路流程图": "Interview Flow Diagram",
+        "从用户登录到面试报告生成的完整面试流程，包括 AI 智囊团设计、动态追问和报告生成环节。": "End-to-end interview workflow from login to report generation, including the AI think tank, adaptive follow-up, and report output.",
+        "战略咨询记忆链路流程图（含 LangGraph 内部节点）": "Strategy Consulting Memory Flow Diagram (with LangGraph Nodes)",
+        "战略咨询完整链路，包含用户历史读取、记忆处理、LangGraph Agent 内部技能选择与 Intent/Context/Reply 节点编排，以及咨询结束后的记忆沉淀。": "Full strategy consulting flow covering history retrieval, memory processing, LangGraph skill routing, Intent/Context/Reply orchestration, and post-consultation memory updates.",
+        "从用户登录到面试报告生成的完整面试流程，包括AI智囊团设计、动态追问和报告生成环节": "End-to-end interview workflow from login to report generation, including AI think tank design, adaptive follow-up, and report output.",
+        "战略咨询完整链路，包含用户历史读取、记忆处理、LangGraph Agent 内部技能选择与 Intent/Context/Reply 节点编排，以及咨询结束后的记忆沉淀": "Full strategy consulting flow covering user history retrieval, memory processing, LangGraph internal skill selection, Intent/Context/Reply orchestration, and memory consolidation.",
+        "用户设置": "User Setup",
+        "面试执行": "Interview Execution",
+        "动态路由": "Dynamic Routing",
+        "报告输出": "Report Output",
+        "咨询入口": "Consulting Entry",
+        "读取用户历史": "Read User History",
+        "记忆处理": "Memory Processing",
+        "LangGraph 战略咨询 Agent": "LangGraph Strategy Agent",
+        "记忆沉淀": "Memory Update",
+        "图例": "Legend",
+        "用户操作": "User Action",
+        "AI 智囊团": "AI Think Tank",
+        "历史读取": "History Read",
+        "Agent 节点": "Agent Nodes",
+        "意图路由": "Intent Routing",
+        "用户登录并进入首页": "Log in and open home",
+        "创建面试": "Create interview",
+        "填写岗位信息": "Enter role details",
+        "公司、岗位、JD、简历": "Company, role, JD, resume",
+        "选择面试配置": "Choose interview setup",
+        "类型、难度、模式、AI模型、语音": "Type, level, mode, model, voice",
+        "JD 解构官": "JD Analyst",
+        "简历深挖官": "Resume Analyst",
+        "面试策略官": "Interview Strategist",
+        "风险质疑官": "Risk Challenger",
+        "主持人整合共识": "Moderator aligns consensus",
+        "面试主题、优先级、开场问题": "Themes, priority, opening questions",
+        "进入正式面试": "Start formal interview",
+        "AI 面试官提问": "AI interviewer asks",
+        "用户语音或文本作答": "User answers by voice or text",
+        "ASR 转写与提交锁": "ASR transcript and submit lock",
+        "追问 Agent 判断": "Follow-up decision",
+        "深挖追问": "Deep follow-up",
+        "回答值得深挖": "Answer merits probing",
+        "切换主题": "Switch topic",
+        "当前主题已覆盖": "Topic covered",
+        "结束面试": "End interview",
+        "达到结束条件": "End criteria met",
+        "↻ 返回提问": "Loop to question",
+        "生成结构化面试报告": "Generate structured report",
+        "五维评分、逐轮点评": "Five-dimension scoring",
+        "智能批注、推荐回答": "Comments and suggested answers",
+        "保存到历史面试记录": "Save to interview history",
+        "查看报告或发起战略咨询": "View report or start consulting",
+        "用户进入战略咨询": "User enters consulting",
+        "选择一场或多场历史面试": "Select interview history",
+        "选择咨询目标和 AI 模型": "Choose goal and AI model",
+        "读取当前可用历史": "Read available history",
+        "历史面试记录": "Interview history",
+        "历史咨询记录": "Consulting history",
+        "长期记忆开关": "Memory toggle",
+        "组装本次咨询上下文": "Assemble consulting context",
+        "结构化记忆条目": "Structured memory items",
+        "长期画像": "Long-term profile",
+        "提取高价值证据": "Extract high-value evidence",
+        "读取 compact memory": "Read compact memory",
+        "形成记忆简报": "Create memory brief",
+        "进入 Agent": "Enter Agent",
+        "选择咨询技能": "Select consulting skill",
+        "方向判断 / 训练计划 / 单场复盘 / 共性问题": "Direction / Plan / Review / Patterns",
+        "当前任务类型": "Task type",
+        "首次进入": "First entry",
+        "用户提问": "User asks",
+        "要求结束": "End requested",
+        "Opening 节点": "Opening Node",
+        "简短总结面试表现": "Briefly summarize performance",
+        "Intent 节点": "Intent Node",
+        "识别用户意图": "Identify user intent",
+        "Context 节点": "Context Node",
+        "组合问题+证据+记忆": "Question + evidence + memory",
+        "Reply 节点": "Reply Node",
+        "Summary 节点": "Summary Node",
+        "生成最终结论": "Generate conclusion",
+        "输出建议/判断": "Output advice/judgment",
+        "输出咨询总结": "Output summary",
+        "用户继续提问": "User continues",
+        "用户结束咨询": "User ends consulting",
+        "↻ 返回": "Loop back",
+        "提问": "Ask",
+        "触发": "Trigger",
+        "总结": "Summary",
+        "生成本次咨询结论": "Generate consulting conclusion",
+        "抽取结构化记忆": "Extract structured memory",
+        "更新 user_memory_items": "Update user_memory_items",
+        "压缩 compact memory": "Compress compact memory",
+        "更新长期画像": "Update long-term profile",
+        "下次咨询继续参考": "Reuse in next consultation"
+      }
+    };
+
+    function tr(value) {
+      if (!value) return value;
+      return currentLang === "en" ? (I18N.en[value] || value) : value;
+    }
+
+    const b = (theme, x, y, w, h, lines, options = {}) => ({ theme, x, y, w, h, lines, ...options });
+    const diamond = (theme, x, y, w, h, lines, options = {}) => b(theme, x, y, w, h, lines, { ...options, shape: "diamond" });
+    const t = (text, y, type = "title", size = null, weight = null) => ({ text, y, type, size, weight });
+    const line = (x1, y1, x2, y2, arrow = true, options = {}) => ({ type: "line", x1, y1, x2, y2, arrow, ...options });
+    const path = (d, arrow = true, options = {}) => ({ type: "path", d, arrow, ...options });
+    const section = (theme, x, y, w, h, label, labelX, labelY, options = {}) => ({
+      theme, x, y, w, h, label, labelX, labelY, ...options
+    });
+    const label = (text, x, y, options = {}) => ({ text, x, y, ...options });
+
+    const diagrams = {
+      interview: {
+        mount: "interview-diagram",
+        prefix: "interview-flow",
+        height: 1470,
+        title: "面试链路流程图",
+        desc: "从用户登录到面试报告生成的完整面试流程，包括AI智囊团设计、动态追问和报告生成环节",
+        spacers: [
+          { from: 296, amount: 30 },
+          { from: 518, amount: 30 },
+          { from: 756, amount: 40 },
+          { from: 924, amount: 30 }
+        ],
+        sections: [
+          section("user", 150, 18, 380, 286, "用户设置", 166, 38, { rx: 14 }),
+          section("think", 40, 296, 600, 228, "AI 智囊团", 56, 314, { rx: 16 }),
+          section("agent", 150, 510, 380, 260, "面试执行", 166, 532, { rx: 14, spacerRef: 518 }),
+          section("route", 52, 748, 576, 170, "动态路由", 66, 770, { rx: 14, spacerRef: 756 }),
+          section("report", 150, 916, 380, 280, "报告输出", 166, 938, { rx: 14, spacerRef: 924 })
+        ],
+        edges: [
+          line(340, 74, 340, 90),
+          line(340, 134, 340, 150),
+          line(340, 206, 340, 222),
+          line(340, 278, 340, 314, false),
+          line(340, 314, 117, 314, false),
+          line(340, 314, 263, 314, false),
+          line(340, 314, 409, 314, false),
+          line(340, 314, 555, 314, false),
+          line(117, 314, 117, 328),
+          line(263, 314, 263, 328),
+          line(409, 314, 409, 328),
+          line(555, 314, 555, 328),
+          line(117, 372, 280, 400),
+          line(263, 372, 310, 400),
+          line(409, 372, 370, 400),
+          line(555, 372, 400, 400),
+          line(340, 444, 340, 456),
+          line(340, 500, 340, 524),
+          line(340, 568, 340, 584),
+          line(340, 628, 340, 644),
+          line(340, 688, 340, 704),
+          line(340, 748, 340, 760),
+          line(340, 824, 340, 836, false),
+          line(340, 836, 130, 836, false),
+          line(340, 836, 550, 836, false),
+          line(130, 836, 130, 846),
+          line(340, 836, 340, 846),
+          line(550, 836, 550, 846),
+          path("M60 868 L28 868 L28 606 L245 606"),
+          path("M270 868 L222 868 L222 606 L245 606", true, { dashed: true, opacity: 0.72 }),
+          line(550, 890, 550, 936, false),
+          path("M550 936 L550 952 L442 952"),
+          line(336, 974, 336, 992),
+          line(340, 1048, 340, 1066),
+          line(340, 1110, 340, 1128)
+        ],
+        nodes: [
+          b("user", 240, 30, 200, 44, [t("用户登录并进入首页", 52)]),
+          b("user", 270, 90, 140, 44, [t("创建面试", 112)]),
+          b("user", 220, 150, 240, 56, [t("填写岗位信息", 170), t("公司、岗位、JD、简历", 190, "sub")]),
+          b("user", 220, 222, 240, 56, [t("选择面试配置", 242), t("类型、难度、模式、AI模型、语音", 262, "sub")]),
+          b("think", 52, 328, 130, 44, [t("JD 解构官", 350)]),
+          b("think", 198, 328, 130, 44, [t("简历深挖官", 350)]),
+          b("think", 344, 328, 130, 44, [t("面试策略官", 350)]),
+          b("think", 490, 328, 130, 44, [t("风险质疑官", 350)]),
+          b("think", 240, 400, 200, 44, [t("主持人整合共识", 422)]),
+          b("think", 190, 456, 300, 44, [t("面试主题、优先级、开场问题", 478)]),
+          b("agent", 250, 524, 180, 44, [t("进入正式面试", 546)]),
+          b("agent", 245, 584, 190, 44, [t("AI 面试官提问", 606)]),
+          b("agent", 230, 644, 220, 44, [t("用户语音或文本作答", 666)]),
+          b("agent", 230, 704, 220, 44, [t("ASR 转写与提交锁", 726)]),
+          diamond("route", 260, 760, 160, 64, [t("追问 Agent 判断", 792, "title", 13)]),
+          b("route", 60, 846, 140, 44, [t("深挖追问", 860), t("回答值得深挖", 878, "sub")]),
+          b("route", 270, 846, 140, 44, [t("切换主题", 860), t("当前主题已覆盖", 878, "sub")]),
+          b("route", 480, 846, 140, 44, [t("结束面试", 860), t("达到结束条件", 878, "sub")]),
+          b("report", 230, 930, 212, 44, [t("生成结构化面试报告", 952)]),
+          b("report", 170, 992, 340, 56, [t("五维评分、逐轮点评", 1012), t("智能批注、推荐回答", 1032, "sub")]),
+          b("report", 230, 1066, 220, 44, [t("保存到历史面试记录", 1088)]),
+          b("user", 200, 1128, 280, 44, [t("查看报告或发起战略咨询", 1150)])
+        ],
+        labels: [
+          label("↻ 返回提问", 110, 736, { anchor: "middle", size: 12, opacity: 0.78, className: "edge-label" })
+        ],
+        legend: {
+          x: 40,
+          y: 1210,
+          title: "图例",
+          items: [
+            { theme: "user", x: 0, label: "用户操作" },
+            { theme: "think", x: 110, label: "AI 智囊团" },
+            { theme: "agent", x: 250, label: "面试执行" },
+            { theme: "route", x: 380, label: "动态路由" },
+            { theme: "report", x: 520, label: "报告输出" }
+          ]
+        }
+      },
+
+      consultation: {
+        mount: "consultation-diagram",
+        prefix: "consultation-flow",
+        height: 1700,
+        title: "战略咨询记忆链路流程图（含 LangGraph 内部节点）",
+        desc: "战略咨询完整链路，包含用户历史读取、记忆处理、LangGraph Agent 内部技能选择与 Intent/Context/Reply 节点编排，以及咨询结束后的记忆沉淀",
+        spacers: [
+          { from: 196, amount: 28 },
+          { from: 364, amount: 28 },
+          { from: 638, amount: 24 },
+          { from: 1178, amount: 30 }
+        ],
+        sections: [
+          section("user", 150, 18, 380, 184, "咨询入口", 166, 38, { rx: 14 }),
+          section("read", 42, 196, 596, 158, "读取用户历史", 56, 213, { rx: 14 }),
+          section("think", 42, 364, 596, 260, "记忆处理", 56, 381, { rx: 14 }),
+          section("agent", 42, 638, 596, 530, "LangGraph 战略咨询 Agent", 56, 656, { rx: 14, emphatic: true }),
+          section("report", 42, 1178, 596, 242, "记忆沉淀", 56, 1196, { rx: 14 })
+        ],
+        edges: [
+          line(340, 68, 340, 82),
+          line(340, 122, 340, 136),
+          line(340, 176, 340, 224),
+          line(340, 264, 340, 276, false),
+          line(340, 276, 130, 276, false),
+          line(340, 276, 550, 276, false),
+          line(130, 276, 130, 290),
+          line(340, 276, 340, 290),
+          line(550, 276, 550, 290),
+          line(130, 330, 130, 350, false),
+          line(550, 330, 550, 350, false),
+          path("M130 350 L340 376", false),
+          path("M550 350 L340 376", false),
+          line(340, 330, 340, 392),
+          line(340, 432, 340, 444, false),
+          line(340, 444, 200, 444, false),
+          line(340, 444, 480, 444, false),
+          line(200, 444, 200, 456),
+          line(480, 444, 480, 456),
+          line(200, 504, 200, 518),
+          line(480, 504, 480, 518),
+          path("M200 558 L200 590 L260 590"),
+          path("M480 558 L480 590 L420 590"),
+          line(340, 610, 340, 668),
+          line(340, 708, 340, 722),
+          line(340, 772, 340, 786),
+          line(340, 830, 340, 842, false),
+          line(340, 842, 140, 842, false),
+          line(340, 842, 540, 842, false),
+          line(140, 842, 140, 856),
+          line(340, 842, 340, 856),
+          line(540, 842, 540, 856),
+          line(340, 906, 340, 922),
+          line(340, 972, 340, 988),
+          path("M140 906 L140 1054 L248 1054"),
+          line(340, 1030, 340, 1046),
+          line(540, 906, 540, 1046),
+          line(340, 1088, 340, 1100, false),
+          line(540, 1088, 540, 1100, false),
+          line(340, 1100, 180, 1100, false),
+          line(340, 1100, 540, 1100, false),
+          line(180, 1100, 180, 1114),
+          line(540, 1100, 540, 1114),
+          path("M96 1135 L20 1135 L20 881 L260 881"),
+          path("M618 1135 L660 1135 L660 881 L618 881"),
+          path("M540 1156 L540 1170 L340 1170 L340 1208"),
+          line(340, 1250, 340, 1264, false),
+          line(340, 1264, 200, 1264, false),
+          line(340, 1264, 480, 1264, false),
+          line(200, 1264, 200, 1278),
+          line(480, 1264, 480, 1278),
+          line(200, 1328, 200, 1342, false),
+          line(480, 1328, 480, 1342, false),
+          path("M200 1342 L340 1356", false),
+          path("M480 1342 L340 1356", false),
+          line(340, 1342, 340, 1362)
+        ],
+        nodes: [
+          b("user", 230, 28, 220, 40, [t("用户进入战略咨询", 48)]),
+          b("user", 210, 82, 260, 40, [t("选择一场或多场历史面试", 102)]),
+          b("user", 210, 136, 260, 40, [t("选择咨询目标和 AI 模型", 156)]),
+          b("read", 245, 224, 190, 40, [t("读取当前可用历史", 244)]),
+          b("read", 62, 290, 136, 40, [t("历史面试记录", 310)]),
+          b("read", 272, 290, 136, 40, [t("历史咨询记录", 310)]),
+          b("read", 482, 290, 136, 40, [t("长期记忆开关", 310)]),
+          b("think", 230, 392, 220, 40, [t("组装本次咨询上下文", 412)]),
+          b("think", 105, 456, 190, 48, [t("user_memory_items", 473), t("结构化记忆条目", 491, "sub")]),
+          b("think", 385, 456, 190, 48, [t("consult_memory_profiles", 473), t("长期画像", 491, "sub")]),
+          b("think", 95, 518, 210, 40, [t("提取高价值证据", 538)]),
+          b("think", 375, 518, 210, 40, [t("读取 compact memory", 538)]),
+          b("think", 260, 570, 160, 40, [t("形成记忆简报", 590, "title", 13)]),
+          b("agent", 230, 668, 220, 40, [t("进入 Agent", 688)]),
+          b("agent", 150, 722, 380, 50, [t("选择咨询技能", 739), t("方向判断 / 训练计划 / 单场复盘 / 共性问题", 758, "sub")]),
+          diamond("route", 282, 786, 116, 44, [t("当前任务类型", 808, "title", 11)]),
+          b("agent", 62, 856, 156, 50, [t("Opening 节点", 873), t("简短总结面试表现", 892, "sub")]),
+          b("route", 260, 856, 160, 50, [t("Intent 节点", 873), t("识别用户意图", 892, "sub")]),
+          b("route", 245, 922, 190, 50, [t("Context 节点", 939), t("组合问题+证据+记忆", 958, "sub")]),
+          b("route", 255, 988, 170, 42, [t("Reply 节点", 1009)]),
+          b("agent", 462, 856, 156, 50, [t("Summary 节点", 873), t("生成最终结论", 892, "sub")]),
+          b("agent", 248, 1046, 184, 42, [t("输出建议/判断", 1067)]),
+          b("agent", 468, 1046, 144, 42, [t("输出咨询总结", 1067)]),
+          b("user", 96, 1114, 168, 42, [t("用户继续提问", 1135)]),
+          b("user", 462, 1114, 156, 42, [t("用户结束咨询", 1135)]),
+          b("report", 230, 1208, 220, 42, [t("生成本次咨询结论", 1229)]),
+          b("report", 105, 1278, 190, 50, [t("抽取结构化记忆", 1295), t("更新 user_memory_items", 1314, "sub")]),
+          b("report", 385, 1278, 190, 50, [t("压缩 compact memory", 1295), t("更新长期画像", 1314, "sub")]),
+          b("success", 215, 1362, 250, 42, [t("下次咨询继续参考", 1383)])
+        ],
+        labels: [
+          label("首次进入", 184, 828, { anchor: "middle", size: 12, opacity: 0.72, className: "edge-label" }),
+          label("用户提问", 356, 852, { anchor: "start", size: 12, opacity: 0.72, className: "edge-label" }),
+          label("要求结束", 526, 828, { anchor: "middle", size: 12, opacity: 0.72, className: "edge-label" }),
+          label("↻ 返回", 34, 980, { anchor: "start", size: 12, opacity: 0.72, className: "edge-label" }),
+          label("提问", 34, 996, { anchor: "start", size: 12, opacity: 0.72, className: "edge-label" }),
+          label("触发", 648, 980, { anchor: "end", size: 12, opacity: 0.72, className: "edge-label" }),
+          label("总结", 648, 996, { anchor: "end", size: 12, opacity: 0.72, className: "edge-label" })
+        ],
+        legend: {
+          x: 42,
+          y: 1460,
+          items: [
+            { theme: "user", x: 0, label: "用户操作" },
+            { theme: "read", x: 120, label: "历史读取" },
+            { theme: "think", x: 260, label: "记忆处理" },
+            { theme: "agent", x: 0, y: 26, label: "Agent 节点" },
+            { theme: "route", x: 150, y: 26, label: "意图路由" },
+            { theme: "report", x: 320, y: 26, label: "记忆沉淀" }
+          ]
+        }
+      }
+    };
+
+    function addDefs(svg, prefix) {
+      const defs = svgEl("defs");
+
+      const shadow = svgEl("filter", {
+        id: `${prefix}-soft-shadow`,
+        x: "-15%",
+        y: "-25%",
+        width: "130%",
+        height: "150%"
+      }, [
+        svgEl("feDropShadow", {
+          dx: 0,
+          dy: 4,
+          stdDeviation: 4,
+          "flood-color": "#000000",
+          "flood-opacity": 0.26
+        })
+      ]);
+      defs.appendChild(shadow);
+
+      Object.entries(PALETTE).forEach(([key, theme]) => {
+        const gradient = svgEl("linearGradient", {
+          id: `${prefix}-${key}`,
+          x1: "0%",
+          y1: "0%",
+          x2: "100%",
+          y2: "100%"
+        }, [
+          svgEl("stop", { offset: "0%", "stop-color": theme.fill }),
+          svgEl("stop", { offset: "100%", "stop-color": theme.fill2 })
+        ]);
+        defs.appendChild(gradient);
+      });
+
+      const marker = svgEl("marker", {
+        id: `${prefix}-arrow`,
+        viewBox: "0 0 10 10",
+        refX: 8,
+        refY: 5,
+        markerWidth: 7,
+        markerHeight: 7,
+        orient: "auto-start-reverse"
+      }, [
+        svgEl("path", {
+          d: "M2 1L8 5L2 9",
+          fill: "none",
+          stroke: neutral.line,
+          "stroke-width": 1.8,
+          "stroke-linecap": "round",
+          "stroke-linejoin": "round"
+        })
+      ]);
+      defs.appendChild(marker);
+
+      svg.appendChild(defs);
+    }
+
+    function drawText(svg, spec) {
+      const text = svgEl("text", {
+        x: spec.x,
+        y: spec.y,
+        "text-anchor": spec.anchor || "middle",
+        "dominant-baseline": spec.baseline || "central",
+        fill: spec.fill || neutral.label,
+        "font-size": spec.size || 14,
+        "font-weight": spec.weight || 500,
+        opacity: spec.opacity ?? 1,
+        className: spec.className || ""
+      });
+      text.textContent = tr(spec.text);
+      svg.appendChild(text);
+      return text;
+    }
+
+    function yOffset(diagram, value) {
+      return (diagram.spacers || []).reduce((total, spacer) => (
+        value >= spacer.from ? total + spacer.amount : total
+      ), 0);
+    }
+
+    function sy(diagram, value) {
+      return value + yOffset(diagram, value);
+    }
+
+    function shiftPathY(diagram, d) {
+      const tokens = d.match(/[A-Za-z]|-?\d+(?:\.\d+)?/g) || [];
+      let command = "";
+      let coordIndex = 0;
+      return tokens.map((token) => {
+        if (/^[A-Za-z]$/.test(token)) {
+          command = token;
+          coordIndex = 0;
+          return token;
+        }
+        const value = Number(token);
+        const isVerticalOnly = command.toUpperCase() === "V";
+        const isHorizontalOnly = command.toUpperCase() === "H";
+        const isYCoordinate = isVerticalOnly || (!isHorizontalOnly && coordIndex % 2 === 1);
+        coordIndex += 1;
+        const shifted = isYCoordinate ? sy(diagram, value) : value;
+        return Number.isInteger(shifted) ? String(shifted) : String(Number(shifted.toFixed(2)));
+      }).join(" ");
+    }
+
+    function fitSvgText(textEl, maxWidth, initialSize, minSize = 8.5) {
+      try {
+        const currentWidth = textEl.getComputedTextLength();
+        if (!currentWidth || currentWidth <= maxWidth) return;
+
+        const nextSize = Math.max(minSize, Math.floor((initialSize * maxWidth / currentWidth) * 10) / 10);
+        textEl.setAttribute("font-size", nextSize);
+
+        if (nextSize === minSize && textEl.getComputedTextLength() > maxWidth) {
+          textEl.setAttribute("textLength", maxWidth);
+          textEl.setAttribute("lengthAdjust", "spacingAndGlyphs");
+        }
+      } catch {
+        textEl.setAttribute("font-size", Math.max(minSize, initialSize - 1));
+      }
+    }
+
+    function drawSection(svg, spec, diagram) {
+      const theme = PALETTE[spec.theme];
+      const group = svgEl("g", { className: "section" });
+      const radius = spec.rx || 14;
+      const sectionOffset = yOffset(diagram, spec.spacerRef ?? spec.y);
+      const y = spec.y + sectionOffset;
+      const labelY = spec.labelY + sectionOffset;
+      const labelText = tr(spec.label);
+      const labelWidth = Math.max(54, [...labelText].reduce((sum, char) => sum + (char.charCodeAt(0) > 255 ? 12 : 7), 18));
+
+      group.appendChild(svgEl("rect", {
+        x: spec.x,
+        y,
+        width: spec.w,
+        height: spec.h,
+        rx: radius,
+        fill: theme.tint,
+        "fill-opacity": spec.emphatic ? 0.065 : 0.045,
+        stroke: theme.stroke,
+        "stroke-opacity": spec.emphatic ? 0.58 : 0.3,
+        "stroke-width": spec.emphatic ? 1 : 0.8,
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+        className: "section-rect"
+      }));
+
+      group.appendChild(svgEl("rect", {
+        x: spec.labelX - 8,
+        y: labelY - 11,
+        width: labelWidth,
+        height: 22,
+        rx: 5,
+        fill: "#0e141c",
+        "fill-opacity": 0.88
+      }));
+      group.appendChild(svgEl("text", {
+        x: spec.labelX,
+        y: labelY,
+        "dominant-baseline": "central",
+        fill: theme.sub,
+        "font-size": 12,
+        "font-weight": 600,
+        className: "section-label"
+      }, []));
+      group.lastChild.textContent = tr(spec.label);
+      svg.appendChild(group);
+    }
+
+    function drawEdge(svg, prefix, spec, diagram) {
+      const attrs = {
+        fill: "none",
+        stroke: spec.stroke || neutral.line,
+        "stroke-width": spec.width || 1.7,
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+        opacity: spec.opacity ?? 1,
+        className: "connector"
+      };
+      if (spec.arrow) attrs["marker-end"] = `url(#${prefix}-arrow)`;
+      if (spec.dashed) attrs["stroke-dasharray"] = "6 5";
+
+      if (spec.type === "path") {
+        svg.appendChild(svgEl("path", { ...attrs, d: shiftPathY(diagram, spec.d) }));
+      } else {
+        svg.appendChild(svgEl("line", {
+          ...attrs,
+          x1: spec.x1,
+          y1: sy(diagram, spec.y1),
+          x2: spec.x2,
+          y2: sy(diagram, spec.y2)
+        }));
+      }
+    }
+
+    function drawNode(svg, prefix, spec, diagram) {
+      const theme = PALETTE[spec.theme];
+      const group = svgEl("g", { className: `node node-${spec.theme}` });
+      const cx = spec.x + spec.w / 2;
+      const y = sy(diagram, spec.y);
+      if (spec.shape === "diamond") {
+        const cy = y + spec.h / 2;
+        group.appendChild(svgEl("polygon", {
+          points: `${cx},${y} ${spec.x + spec.w},${cy} ${cx},${y + spec.h} ${spec.x},${cy}`,
+          fill: `url(#${prefix}-${spec.theme})`,
+          stroke: theme.stroke,
+          "stroke-width": 1,
+          filter: `url(#${prefix}-soft-shadow)`,
+          className: "node-diamond"
+        }));
+      } else {
+        group.appendChild(svgEl("rect", {
+          x: spec.x,
+          y,
+          width: spec.w,
+          height: spec.h,
+          rx: spec.rx || 8,
+          fill: `url(#${prefix}-${spec.theme})`,
+          stroke: theme.stroke,
+          "stroke-width": 1,
+          filter: `url(#${prefix}-soft-shadow)`,
+          className: "node-rect"
+        }));
+      }
+
+      svg.appendChild(group);
+      spec.lines.forEach((lineSpec) => {
+        const fill = lineSpec.type === "sub" ? theme.sub : theme.text;
+        const size = lineSpec.size || (lineSpec.type === "sub" ? 12 : 14);
+        const weight = lineSpec.weight || (lineSpec.type === "sub" ? 440 : 620);
+        const textEl = svgEl("text", {
+          x: lineSpec.x || cx,
+          y: sy(diagram, lineSpec.y),
+          "text-anchor": lineSpec.anchor || "middle",
+          "dominant-baseline": "central",
+          fill,
+          "font-size": size,
+          "font-weight": weight,
+          className: "node-text"
+        }, []);
+        textEl.textContent = tr(lineSpec.text);
+        group.appendChild(textEl);
+        const maxTextWidth = lineSpec.maxWidth || (spec.shape === "diamond" ? spec.w * 0.7 : spec.w - 18);
+        fitSvgText(textEl, maxTextWidth, size, lineSpec.minSize || 8.5);
+      });
+    }
+
+    function drawLabel(svg, spec, diagram) {
+      drawText(svg, {
+        ...spec,
+        y: sy(diagram, spec.y),
+        fill: spec.fill || neutral.label,
+        weight: spec.weight || 500
+      });
+    }
+
+    function drawLegend(svg, prefix, legendSpec, diagram) {
+      const group = svgEl("g", { transform: `translate(${legendSpec.x}, ${sy(diagram, legendSpec.y)})` });
+      if (legendSpec.title) {
+        group.appendChild(svgEl("text", {
+          x: 0,
+          y: 0,
+          fill: neutral.label,
+          "font-size": 12,
+          "font-weight": 600,
+          className: "legend-text"
+        }));
+        group.lastChild.textContent = tr(legendSpec.title);
+      }
+
+      const baseY = legendSpec.title ? 10 : 0;
+      legendSpec.items.forEach((item) => {
+        const theme = PALETTE[item.theme];
+        const itemY = baseY + (item.y || 0);
+        group.appendChild(svgEl("rect", {
+          x: item.x,
+          y: itemY,
+          width: 14,
+          height: 14,
+          rx: 3,
+          fill: `url(#${prefix}-${item.theme})`,
+          stroke: theme.stroke,
+          "stroke-width": 0.8,
+          className: "legend-swatch"
+        }));
+        group.appendChild(svgEl("text", {
+          x: item.x + (legendSpec.title ? 22 : 20),
+          y: itemY + (legendSpec.title ? 12 : 11),
+          fill: neutral.label,
+          "font-size": 12,
+          "font-weight": 500,
+          className: "legend-text"
+        }));
+        group.lastChild.textContent = tr(item.label);
+      });
+      svg.appendChild(group);
+    }
+
+    function renderDiagram(diagram) {
+      const mount = document.getElementById(diagram.mount);
+      const svg = svgEl("svg", {
+        className: "flow-svg",
+        viewBox: `0 0 680 ${diagram.height}`,
+        role: "img",
+        "aria-labelledby": `${diagram.prefix}-title ${diagram.prefix}-desc`,
+        xmlns: SVG_NS
+      });
+
+      svg.appendChild(svgEl("title", { id: `${diagram.prefix}-title` }));
+      svg.lastChild.textContent = tr(diagram.title);
+      svg.appendChild(svgEl("desc", { id: `${diagram.prefix}-desc` }));
+      svg.lastChild.textContent = tr(diagram.desc);
+
+      addDefs(svg, diagram.prefix);
+      diagram.sections.forEach((item) => drawSection(svg, item, diagram));
+      diagram.edges.forEach((item) => drawEdge(svg, diagram.prefix, item, diagram));
+      diagram.nodes.forEach((item) => drawNode(svg, diagram.prefix, item, diagram));
+      diagram.labels.forEach((item) => drawLabel(svg, item, diagram));
+      drawLegend(svg, diagram.prefix, diagram.legend, diagram);
+
+      mount.replaceChildren(svg);
+    }
+
+
+    function renderApp() {
+      const data = copy();
+      document.title = data.documentTitle;
+      document.documentElement.lang = currentLang === "zh" ? "zh-CN" : "en";
+      document.getElementById("version-pill").textContent = data.version;
+      renderNav(data);
+      renderIntro(data.sections[activeSection]);
+      renderMainSection();
+      document.getElementById("global-lang-btn").textContent = currentLang === "zh" ? "中 / EN" : "EN / 中";
+    }
+
+    function renderNav(data) {
+      const nav = document.getElementById("top-nav");
+      nav.innerHTML = Object.entries(data.nav).map(([key, label]) => `
+        <button
+          class="nav-btn ${key === activeSection ? "active" : ""}"
+          type="button"
+          data-section="${key}"
+          aria-pressed="${key === activeSection ? "true" : "false"}"
+        >${escapeHTML(label)}</button>
+      `).join("");
+
+      nav.querySelectorAll("[data-section]").forEach((button) => {
+        button.addEventListener("click", () => {
+          activeSection = button.dataset.section;
+          renderApp();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      });
+    }
+
+    function renderIntro(section) {
+      const visual = visualMeta[activeSection];
+      document.getElementById("page-kicker").textContent = visual.kicker;
+      document.getElementById("page-title").textContent = section.title;
+      document.getElementById("page-subtitle").textContent = section.subtitle;
+      document.getElementById("signal-strip").innerHTML = visual.signals.map((item) => `
+        <div class="signal">
+          <strong>${escapeHTML(item.value)}</strong>
+          <span>${escapeHTML(item.label)}</span>
+        </div>
+      `).join("");
+    }
+
+    function renderMainSection() {
+      const main = document.getElementById("main-content");
+      if (activeSection === "highlights") {
+        main.innerHTML = renderHighlights();
+        bindHighlightAccordions();
+        return;
+      }
+      if (activeSection === "tech") {
+        main.innerHTML = renderTech();
+        renderFlowDiagrams();
+        return;
+      }
+      main.innerHTML = renderManual();
+    }
+
+    function renderHighlights() {
+      return `<div class="module-stack">${copy().highlights.map((module, index) => {
+        const tone = toneVars[module.tone];
+        const isExpanded = expandedHighlights.has(index);
+        return `
+          <article
+            class="module-item ${isExpanded ? "expanded" : ""}"
+            id="highlight-${index}"
+            style="--accent:${tone.accent};--accent-soft:${tone.soft};--accent-border:${tone.border};"
+          >
+            <button class="module-header" type="button" data-highlight-index="${index}" aria-expanded="${isExpanded ? "true" : "false"}">
+              <span class="module-icon" aria-hidden="true">${module.icon}</span>
+              <span>
+                <span class="module-kicker">
+                  <span class="module-title">${escapeHTML(module.title)}</span>
+                  <span class="module-code">${escapeHTML(module.code)}</span>
+                </span>
+                <span class="module-subtitle">${escapeHTML(module.subtitle)}</span>
+              </span>
+              <span class="chevron" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </span>
+            </button>
+            <div class="module-body-shell">
+              <div class="module-body">
+                <div class="module-detail">
+                  ${module.columns.map((column) => `
+                    <div class="detail-column">
+                      ${column.map((group) => `
+                        <section class="detail-group">
+                          <h3 class="detail-title"><span class="detail-dot"></span>${escapeHTML(group.title)}</h3>
+                          <ul class="detail-list">
+                            ${group.items.map((item) => `<li>${escapeHTML(item)}</li>`).join("")}
+                          </ul>
+                        </section>
+                      `).join("")}
+                    </div>
+                  `).join("")}
+                </div>
+                <div class="tag-row">
+                  ${module.tags.map((tag) => `<span class="tag">${escapeHTML(tag)}</span>`).join("")}
+                </div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("")}</div>`;
+    }
+
+    function bindHighlightAccordions() {
+      document.querySelectorAll("[data-highlight-index]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const index = Number(button.dataset.highlightIndex);
+          const item = document.getElementById(`highlight-${index}`);
+          if (!item) return;
+
+          if (expandedHighlights.has(index)) {
+            expandedHighlights.delete(index);
+            item.classList.remove("expanded");
+            button.setAttribute("aria-expanded", "false");
+          } else {
+            expandedHighlights.add(index);
+            item.classList.add("expanded");
+            button.setAttribute("aria-expanded", "true");
+            setTimeout(() => item.scrollIntoView({ block: "nearest", behavior: "smooth" }), 40);
+          }
+        });
+      });
+    }
+
+    function renderTech() {
+      const data = copy().tech;
+      return `
+        <div class="tech-grid">
+          <div id="diagram-0"></div>
+          <div class="logic-row">
+            ${data.logic.map((item) => `
+              <section class="logic-node">
+                <b>${escapeHTML(item.title)}</b>
+                <span>${escapeHTML(item.text)}</span>
+              </section>
+            `).join("")}
+          </div>
+          <div id="diagram-1"></div>
+        </div>
+      `;
+    }
+
+    function renderFlowDiagrams() {
+      const diagramOrder = ["interview", "consultation"];
+      diagramOrder.forEach((key, index) => {
+        const diagram = diagrams[key];
+        const mount = document.getElementById(`diagram-${index}`);
+        if (!mount) return;
+
+        const card = document.createElement("article");
+        card.className = "flow-card";
+        card.innerHTML = `
+          <div class="flow-heading">
+            <div>
+              <h3>${escapeHTML(tr(diagram.title))}</h3>
+              <p>${escapeHTML(tr(diagram.desc))}</p>
+            </div>
+          </div>
+          <div class="flow-svg-wrap" id="flowchart-${key}"></div>
+        `;
+
+        mount.replaceChildren(card);
+        renderDiagram({ ...diagram, mount: `flowchart-${key}` });
+      });
+    }
+
+    function renderManual() {
+      const data = copy();
+      return `
+        <div class="manual-grid">
+          ${data.manual.map((block) => `
+            <section class="manual-block">
+              <h3>${escapeHTML(block.title)}</h3>
+              <p>${escapeHTML(block.text)}</p>
+              <ul class="manual-list">
+                ${block.items.map((item) => `<li>${escapeHTML(item)}</li>`).join("")}
+              </ul>
+            </section>
+          `).join("")}
+        </div>
+        <section class="demo-showcase">
+          <div class="demo-showcase-header">
+            <h3>${escapeHTML(data.demo.title)}</h3>
+            <p>${escapeHTML(data.demo.text)}</p>
+          </div>
+          <figure class="demo-shot">
+            <img src="${escapeHTML(data.demo.image)}" alt="${escapeHTML(data.demo.caption)}" loading="lazy">
+            <figcaption>${escapeHTML(data.demo.caption)}</figcaption>
+          </figure>
+        </section>
+      `;
+    }
+
+    document.getElementById("global-lang-btn").addEventListener("click", () => {
+      currentLang = currentLang === "zh" ? "en" : "zh";
+      renderApp();
+    });
+
+    document.addEventListener("mousemove", (event) => {
+      const tip = document.getElementById("cursor-tip");
+      if (!tip.classList.contains("visible")) return;
+      tip.style.left = `${event.clientX + 16}px`;
+      tip.style.top = `${event.clientY + 16}px`;
+    });
+
+    const cursorGlow = document.getElementById("cursor-glow");
+    const cursorState = { x: window.innerWidth / 2, y: window.innerHeight / 2, frame: 0 };
+
+    function commitCursorGlow() {
+      cursorState.frame = 0;
+      document.documentElement.style.setProperty("--cursor-x", `${cursorState.x}px`);
+      document.documentElement.style.setProperty("--cursor-y", `${cursorState.y}px`);
+      document.documentElement.style.setProperty("--cursor-opacity", "1");
+    }
+
+    window.addEventListener("pointermove", (event) => {
+      if (!cursorGlow) return;
+      cursorState.x = event.clientX;
+      cursorState.y = event.clientY;
+      if (!cursorState.frame) {
+        cursorState.frame = window.requestAnimationFrame(commitCursorGlow);
+      }
+    });
+
+    window.addEventListener("pointerleave", () => {
+      document.documentElement.style.setProperty("--cursor-opacity", "0");
+    });
+
+    window.addEventListener("blur", () => {
+      document.documentElement.style.setProperty("--cursor-opacity", "0");
+    });
+
+    document.addEventListener("DOMContentLoaded", renderApp);
+  </script>
+</body>
+</html>
