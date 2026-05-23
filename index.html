@@ -353,26 +353,26 @@
       z-index: -1;
       opacity: 0;
       background:
-        radial-gradient(circle at 18% 0%, rgba(124,183,255,0.18), transparent 34%),
-        linear-gradient(135deg, rgba(124,183,255,0.12), transparent 46%);
+        radial-gradient(circle at 18% 0%, rgba(112,132,154,0.055), transparent 30%),
+        linear-gradient(135deg, rgba(112,132,154,0.035), transparent 42%);
       transition: opacity 420ms ease;
     }
 
     .module-item:hover {
-      border-color: rgba(124,183,255,0.26);
+      border-color: rgba(124,150,180,0.18);
       box-shadow: 0 18px 52px rgba(0,0,0,0.26);
     }
 
     .module-item.expanded {
       border-color: var(--accent-border);
       background:
-        linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.035)),
-        linear-gradient(135deg, var(--accent-soft), transparent 42%);
+        linear-gradient(180deg, rgba(255,255,255,0.038), rgba(255,255,255,0.018)),
+        linear-gradient(135deg, var(--accent-soft), transparent 38%);
       box-shadow: var(--shadow);
     }
 
     .module-item.expanded::before {
-      opacity: 1;
+      opacity: 0.62;
     }
 
     .module-header {
@@ -424,8 +424,8 @@
       padding: 0 8px;
       border: 1px solid var(--accent-border);
       border-radius: 99px;
-      color: #bfdcff;
-      background: rgba(124,183,255,0.08);
+      color: #b7c7d9;
+      background: rgba(112,132,154,0.04);
       font-size: 10px;
       font-weight: 800;
       letter-spacing: 0.08em;
@@ -739,57 +739,67 @@
       background: var(--cyan);
     }
 
-    .demo-showcase {
-      margin-top: 18px;
-      border: 1px solid var(--line);
+    .manual-media-toggle {
+      margin-top: 16px;
+      border: 1px solid rgba(124,183,255,0.22);
       border-radius: var(--radius);
       background:
-        linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.024)),
-        rgba(10, 15, 22, 0.66);
-      box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+        linear-gradient(180deg, rgba(124,183,255,0.08), rgba(124,183,255,0.025)),
+        rgba(5, 9, 14, 0.48);
       overflow: hidden;
     }
 
-    .demo-showcase-header {
-      padding: 20px;
-      border-bottom: 1px solid rgba(220,232,255,0.09);
-    }
-
-    .demo-showcase-header h3 {
-      margin: 0;
-      color: #fff;
-      font-size: 21px;
-      line-height: 1.25;
+    .manual-media-toggle summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 14px;
+      color: #f4f8ff;
+      font-size: 14px;
+      line-height: 1.4;
       font-weight: 800;
+      cursor: pointer;
+      list-style: none;
+      user-select: none;
     }
 
-    .demo-showcase-header p {
-      max-width: 760px;
-      margin: 10px 0 0;
-      color: var(--soft);
-      font-size: 14.5px;
-      line-height: 1.65;
+    .manual-media-toggle summary::-webkit-details-marker {
+      display: none;
     }
 
-    .demo-shot {
-      margin: 0;
-      padding: 18px;
+    .manual-media-toggle summary::after {
+      content: "+";
+      flex: 0 0 auto;
+      width: 22px;
+      height: 22px;
+      border: 1px solid rgba(124,183,255,0.35);
+      border-radius: 50%;
+      color: var(--blue);
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      line-height: 1;
+      transition: transform var(--ease), background var(--ease);
     }
 
-    .demo-shot img {
+    .manual-media-toggle[open] summary::after {
+      content: "-";
+      transform: rotate(180deg);
+      background: rgba(124,183,255,0.12);
+    }
+
+    .manual-media-panel {
+      padding: 0 14px 14px;
+    }
+
+    .manual-media-panel img {
       display: block;
       width: 100%;
       height: auto;
       border: 1px solid rgba(220,232,255,0.12);
       border-radius: var(--radius);
       background: rgba(0,0,0,0.22);
-    }
-
-    .demo-shot figcaption {
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.55;
     }
 
     .cursor-tip {
@@ -991,11 +1001,11 @@
           highlights: {
             kicker: "PRODUCT HIGHLIGHTS",
             title: "产品亮点",
-            subtitle: "把真实面试里的压力、追问、复盘和长期改进装进一个多 Agent 闭环，让训练不再停留在题库练习。",
+            subtitle: "把真实面试里的压力、追问、复盘装到长期改进的计划里。一场面试，多个Agents 闭环，让面试，越面越强。",
             signals: [
-              { value: "3", label: "核心能力模块" },
-              { value: "Multi", label: "Agent 协同规划" },
-              { value: "Evidence", label: "证据驱动评估" }
+              { value: "1+1", label: "核心能力模块" },
+              { value: "Multi-Agent", label: "Agent 协同规划" },
+              { value: "每一句话", label: "证据驱动评估" }
             ]
           },
           tech: {
@@ -1031,7 +1041,7 @@
                 { title: "背景痛点", items: ["练习缺少真实压力环境", "复盘过度依赖主观感受", "长期准备过程难以沉淀数据"] }
               ],
               [
-                { title: "核心目标清单", items: ["构建模拟/练习双模引擎", "多 Agent 协同设定动态主题", "生成多维量化评估报告"] }
+                { title: "核心目标清单", items: ["构建模拟/练习双模引擎", "多 Agent 协同设定动态主题", "生成多维量化评估报告","或许，下次准备面试的时候，不用对着墙说话..."] }
               ]
             ],
             tags: ["真实压力", "闭环训练", "长期沉淀"]
@@ -1082,7 +1092,7 @@
                 { title: "面试，一定要是黑盒吗？", items: ["企业出于风险控制和保密的考量，通常不会向候选人披露面试细节与评价体系。", "随着求职竞争加剧与 B 端 AI 面试产品广泛落地，候选人往往陷入缺乏反馈的恶性循环。", "当候选人难以复盘自己的面试输出，长期准备就很难沉淀为真实的面试竞争力，甚至会出现面的越多、面得越差的问题。"] }
               ],
               [
-                { title: "代面，能解决什么问题？", items: ["代面 InterviewAgent 是基于 C 端体验开发的 AI as a Service（AIssS）产品，提供面试模拟 + 战略咨询服务。", "我们希望高效拆解面试黑盒，增加求职流程透明度，针对性梳理面试卡点，快速提升面试表现。", "我们既提供开箱即用的应试技巧，也重视长期能力塑造；在面试这条路上，我们坚信技术平权，也很高兴能和大家一起迈出一步。"] }
+                { title: "代面，能解决什么问题？", items: ["代面 InterviewAgent 是基于 C 端体验开发的 AI as a Service (AIssS)产品，提供面试模拟 + 战略咨询服务。", "我们希望高效拆解面试黑盒，增加求职流程透明度，针对性梳理面试卡点，快速提升面试表现。", "我们既提供开箱即用的应试技巧，也重视长期能力塑造；在面试这条路上，我们坚信技术平权，也很高兴能和大家一起迈出一步。"] }
               ]
             ],
             tags: ["技术平权", "黑盒拆解", "C端体验", "长期能力"]
@@ -1103,7 +1113,13 @@
           {
             title: "输入配置",
             text: "用户从安全隔离的配置入口提交目标公司、岗位、JD、个人简历、面试类型、难度、模型和语音选项。",
-            items: ["岗位与简历共同决定问题方向", "难度与压力等级影响追问强度", "配置只服务当前用户的数据沙盒"]
+            items: ["岗位与简历共同决定问题方向", "难度与压力等级影响追问强度", "配置只服务当前用户的数据沙盒"],
+            media: {
+              label: "实机演示",
+              caption: "输入配置实机演示",
+              image: "assets/demo/agentinterview-setting.gif",
+              open: true
+            }
           },
           {
             title: "面试过程",
@@ -1113,7 +1129,12 @@
           {
             title: "报告输出",
             text: "面试结束后输出结构化综合报告，包含维度评分、逐轮点评、原文证据、推荐回答和可执行改进建议。",
-            items: ["扣分必须绑定原文证据", "建议按能力短板组织", "行为倾向以事实表达，不做绝对人格定型"]
+            items: ["扣分必须绑定原文证据", "建议按能力短板组织", "行为倾向以事实表达，不做绝对人格定型"],
+            media: {
+              label: "实机演示",
+              caption: "报告输出实机演示",
+              image: "assets/demo/agentinterview-report.gif"
+            }
           },
           {
             title: "持续改进",
@@ -1125,13 +1146,7 @@
             text: "代面 InterviewAgent 已通过 Web 应用形式完成交付，全流程模拟面试与战略咨询服务均已上线。",
             items: ["用户可直接通过浏览器访问产品", "全流程模拟面试已经上线", "战略咨询服务已经上线"]
           }
-        ],
-        demo: {
-          title: "Demo 截图",
-          text: "截图文件已随网页一起放入 GitHub Pages 仓库，页面通过相对路径加载，分享链接时无需依赖本地文件。",
-          caption: "全流程模拟面试 Demo 截图",
-          image: "assets/demo/interview-demo.png"
-        }
+        ]
       },
       en: {
         documentTitle: "InterviewAgent",
@@ -1261,7 +1276,13 @@
           {
             title: "Input Setup",
             text: "Users submit target company, role, JD, resume, interview type, difficulty, model, and voice options through an isolated setup entry.",
-            items: ["Role and resume jointly determine question direction", "Difficulty and stress level affect follow-up intensity", "Configuration stays inside the user's data sandbox"]
+            items: ["Role and resume jointly determine question direction", "Difficulty and stress level affect follow-up intensity", "Configuration stays inside the user's data sandbox"],
+            media: {
+              label: "实机演示",
+              caption: "Input setup live demo",
+              image: "assets/demo/agentinterview-setting.gif",
+              open: true
+            }
           },
           {
             title: "Interview Run",
@@ -1271,7 +1292,12 @@
           {
             title: "Report Output",
             text: "After the interview, the system outputs a structured report with scores, comments, transcript evidence, suggested answers, and improvement advice.",
-            items: ["Deductions must cite transcript evidence", "Advice is organized around capability gaps", "Behavioral tendencies stay factual instead of rigid personality typing"]
+            items: ["Deductions must cite transcript evidence", "Advice is organized around capability gaps", "Behavioral tendencies stay factual instead of rigid personality typing"],
+            media: {
+              label: "实机演示",
+              caption: "Report output live demo",
+              image: "assets/demo/agentinterview-report.gif"
+            }
           },
           {
             title: "Continuous Improvement",
@@ -1283,21 +1309,15 @@
             text: "InterviewAgent has been delivered as a web application, with the full mock interview flow and strategic consulting service already live.",
             items: ["Users can access the product directly in a browser", "The full mock interview flow is live", "The strategic consulting service is live"]
           }
-        ],
-        demo: {
-          title: "Demo Screenshot",
-          text: "The screenshot is stored in the GitHub Pages repository and loaded with a relative path, so the shared page does not depend on local files.",
-          caption: "Full mock interview demo screenshot",
-          image: "assets/demo/interview-demo.png"
-        }
+        ]
       }
     };
 
     const toneVars = {
-      overview: { accent: "#7cb7ff", soft: "rgba(124,183,255,0.12)", border: "rgba(124,183,255,0.36)" },
-      execution: { accent: "#7cb7ff", soft: "rgba(124,183,255,0.12)", border: "rgba(124,183,255,0.36)" },
-      feedback: { accent: "#7cb7ff", soft: "rgba(124,183,255,0.12)", border: "rgba(124,183,255,0.36)" },
-      vision: { accent: "#7cb7ff", soft: "rgba(124,183,255,0.12)", border: "rgba(124,183,255,0.36)" }
+      overview: { accent: "#8ba0b8", soft: "rgba(112,132,154,0.045)", border: "rgba(124,150,180,0.18)" },
+      execution: { accent: "#8ba0b8", soft: "rgba(112,132,154,0.045)", border: "rgba(124,150,180,0.18)" },
+      feedback: { accent: "#8ba0b8", soft: "rgba(112,132,154,0.045)", border: "rgba(124,150,180,0.18)" },
+      vision: { accent: "#8ba0b8", soft: "rgba(112,132,154,0.045)", border: "rgba(124,150,180,0.18)" }
     };
 
     const visualMeta = {
@@ -2267,6 +2287,18 @@
       });
     }
 
+    function renderManualMedia(block) {
+      if (!block.media) return "";
+      return `
+        <details class="manual-media-toggle"${block.media.open ? " open" : ""}>
+          <summary>${escapeHTML(block.media.label)}</summary>
+          <figure class="manual-media-panel">
+            <img src="${escapeHTML(block.media.image)}" alt="${escapeHTML(block.media.caption)}" loading="lazy">
+          </figure>
+        </details>
+      `;
+    }
+
     function renderManual() {
       const data = copy();
       return `
@@ -2278,19 +2310,10 @@
               <ul class="manual-list">
                 ${block.items.map((item) => `<li>${escapeHTML(item)}</li>`).join("")}
               </ul>
+              ${renderManualMedia(block)}
             </section>
           `).join("")}
         </div>
-        <section class="demo-showcase">
-          <div class="demo-showcase-header">
-            <h3>${escapeHTML(data.demo.title)}</h3>
-            <p>${escapeHTML(data.demo.text)}</p>
-          </div>
-          <figure class="demo-shot">
-            <img src="${escapeHTML(data.demo.image)}" alt="${escapeHTML(data.demo.caption)}" loading="lazy">
-            <figcaption>${escapeHTML(data.demo.caption)}</figcaption>
-          </figure>
-        </section>
       `;
     }
 
