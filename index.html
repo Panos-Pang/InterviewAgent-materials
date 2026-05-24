@@ -999,7 +999,7 @@
 
     const i18n = {
       zh: {
-        documentTitle: "代面 InterviewAgent",
+        documentTitle: "代面 Agents as an Interview",
         version: "V2.0 规划",
         nav: {
           highlights: "产品亮点",
@@ -1105,7 +1105,7 @@
                 { title: "面试，一定要是黑盒吗？", items: ["企业出于风险控制和保密的考量，通常不会向候选人披露面试细节与评价体系。", "随着求职竞争加剧与 B 端 AI 面试产品广泛落地，候选人往往陷入缺乏反馈的恶性循环。", "当候选人无法复盘自己的面试输出，长期准备就难以沉淀为真实的面试竞争力，甚至会出现面的越多、面得越差的问题。"] }
               ],
               [
-                { title: "代面，能解决什么问题？", items: ["代面 InterviewAgent 是基于 C 端体验开发的 AI 即服务（AIaaS）产品，提供面试模拟 + 战略咨询服务。", "我们希望高效拆解面试黑盒，增加求职流程透明度，针对性梳理面试卡点，快速提升面试表现。", "我们既提供开箱即用的应试技巧，也重视长期能力塑造；在面试这条路上，我们坚信技术平权，也很高兴能和大家一起迈出一步。"] }
+                { title: "代面，能解决什么问题？", items: ["代面 InterviewAgent 是基于 C 端体验开发的 AI 即服务（AIaaS）产品，提供面试模拟 + 战略咨询服务。", "我们希望高效拆解面试黑盒，增加求职流程透明度，针对性梳理面试卡点，快速提升面试表现。", "我们既提供开箱即用的应试技巧，也重视长期能力塑造；在面试这条路上，我们坚信技术平权，也很高兴能和大家一起向前迈出一步。"] }
               ]
             ],
             tags: ["技术平权", "黑盒拆解", "C 端体验", "长期能力"]
@@ -1152,18 +1152,25 @@
             media: {
               label: "实机演示",
               caption: "报告输出实机演示",
-              video: "assets/demo/agentinterview-report.mp4"
+              video: "assets/demo/agentinterview-fullreport.mp4"
             }
           },
           {
             title: "持续改进",
             text: "报告和咨询结论会沉淀为长期记忆摘要，下一次训练或咨询可以继续参考，形成持续优化闭环。",
             items: ["结构化事实记忆保存高价值证据", "紧凑画像降低上下文成本", "阶段性复盘帮助调整训练计划"],
-            media: {
-              label: "实机演示",
-              caption: "持续改进实机演示",
-              video: "assets/demo/agentinterview-discussion.mp4"
-            }
+            media: [
+              {
+                label: "实机演示：战略咨询",
+                caption: "战略咨询实机演示",
+                video: "assets/demo/agentinterview-discussion.mp4"
+              },
+              {
+                label: "实机演示：长期记忆",
+                caption: "长期记忆实机演示",
+                video: "assets/demo/agentinterview-memory.mp4"
+              }
+            ]
           },
           {
             title: "基于 Cloudflare Pages 的 Web 应用交付",
@@ -1302,7 +1309,7 @@
             text: "Users submit target company, role, JD, resume, interview type, difficulty, model, and voice options through an isolated setup entry.",
             items: ["Role and resume jointly determine question direction", "Difficulty and stress level affect follow-up intensity", "Configuration stays inside the user's data sandbox"],
             media: {
-              label: "实机演示",
+              label: "Live Demo",
               caption: "Input setup live demo",
               video: "assets/demo/agentinterview-setting.mp4",
               open: true,
@@ -1314,7 +1321,7 @@
             text: "The AI roundtable plans themes first, then the execution engine drives the interview while the follow-up router adjusts the path.",
             items: ["Opening questions align role requirements with resume evidence", "Vague answers trigger deeper probing", "Covered topics switch forward and threshold conditions end the run"],
             media: {
-              label: "实机演示",
+              label: "Live Demo",
               caption: "Interview run live demo",
               video: "assets/demo/agentinterview-meeting.mp4"
             }
@@ -1324,20 +1331,27 @@
             text: "After the interview, the system outputs a structured report with scores, comments, transcript evidence, suggested answers, and improvement advice.",
             items: ["Deductions must cite transcript evidence", "Advice is organized around capability gaps", "Behavioral tendencies stay factual instead of rigid personality typing"],
             media: {
-              label: "实机演示",
+              label: "Live Demo",
               caption: "Report output live demo",
-              video: "assets/demo/agentinterview-report.mp4"
+              video: "assets/demo/agentinterview-fullreport.mp4"
             }
           },
           {
             title: "Continuous Improvement",
             text: "Reports and consulting conclusions are compressed into long-term memory summaries, so the next training or consulting session can continue from them.",
             items: ["Structured fact memory stores high-value evidence", "Compact profiles reduce context cost", "Stage reviews help update the training plan"],
-            media: {
-              label: "实机演示",
-              caption: "Continuous improvement live demo",
-              video: "assets/demo/agentinterview-discussion.mp4"
-            }
+            media: [
+              {
+                label: "Live Demo: Strategic Consulting",
+                caption: "Strategic consulting live demo",
+                video: "assets/demo/agentinterview-discussion.mp4"
+              },
+              {
+                label: "Live Demo: Long-term Memory",
+                caption: "Long-term memory live demo",
+                video: "assets/demo/agentinterview-memory.mp4"
+              }
+            ]
           },
           {
             title: "Web App Delivery on Cloudflare Pages",
@@ -2347,20 +2361,24 @@
 
     function renderManualMedia(block) {
       if (!block.media) return "";
-      const preload = block.media.preload || "metadata";
-      const media = block.media.video
-        ? `<video controls muted loop playsinline preload="${escapeHTML(preload)}" aria-label="${escapeHTML(block.media.caption)}">
-            <source src="${escapeHTML(block.media.video)}" type="video/mp4">
-          </video>`
-        : `<img src="${escapeHTML(block.media.image)}" alt="${escapeHTML(block.media.caption)}" loading="lazy">`;
-      return `
-        <details class="manual-media-toggle"${block.media.open ? " open" : ""}>
-          <summary>${escapeHTML(block.media.label)}</summary>
-          <figure class="manual-media-panel">
-            ${media}
-          </figure>
-        </details>
-      `;
+      const mediaItems = Array.isArray(block.media) ? block.media : [block.media];
+      return mediaItems.map((item) => {
+        const preload = item.preload || "metadata";
+        const media = item.video
+          ? `<video controls muted loop playsinline preload="${escapeHTML(preload)}" aria-label="${escapeHTML(item.caption)}">
+              <source src="${escapeHTML(item.video)}" type="video/mp4">
+            </video>`
+          : `<img src="${escapeHTML(item.image)}" alt="${escapeHTML(item.caption)}" loading="lazy">`;
+
+        return `
+          <details class="manual-media-toggle"${item.open ? " open" : ""}>
+            <summary>${escapeHTML(item.label)}</summary>
+            <figure class="manual-media-panel">
+              ${media}
+            </figure>
+          </details>
+        `;
+      }).join("");
     }
 
     function renderManual() {
