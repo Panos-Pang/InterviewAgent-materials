@@ -1001,7 +1001,7 @@
           highlights: {
             kicker: "PRODUCT HIGHLIGHTS",
             title: "产品亮点",
-            subtitle: "把真实面试里的压力、追问、复盘装到长期改进的计划里。一场面试，多个Agents 闭环，让面试，越面越强。",
+            subtitle: "把真实面试中的压力、追问与复盘纳入长期改进闭环。一场面试，多 Agent 协同，让准备越练越强。",
             signals: [
               { value: "1+1", label: "核心能力模块" },
               { value: "Multi-Agent", label: "Agent 协同规划" },
@@ -1038,17 +1038,17 @@
             tone: "overview",
             columns: [
               [
-                { title: "背景痛点", items: ["练习缺少真实压力环境", "复盘过度依赖主观感受", "长期准备过程难以沉淀数据"] }
+                { title: "背景痛点", items: ["练习缺少真实压力环境", "复盘过度依赖主观感受", "长期准备过程难以沉淀为竞争力"] }
               ],
               [
-                { title: "核心目标清单", items: ["构建模拟/练习双模引擎", "多 Agent 协同设定动态主题", "生成多维量化评估报告","或许，下次准备面试的时候，不用对着墙说话..."] }
+                { title: "核心目标清单", items: ["构建模拟/练习双模引擎", "多 Agent 协同设定动态主题", "生成多维量化评估报告", "让下一次准备不必再对着墙说话"] }
               ]
             ],
             tags: ["真实压力", "闭环训练", "长期沉淀"]
           },
           {
             icon: "🧠",
-            title: "多Agent面试实战",
+            title: "多 Agent 面试实战",
             code: "EXECUTION",
             subtitle: "把配置、规划、执行和追问路由合并为一条可运行的实战链路",
             tone: "execution",
@@ -1076,7 +1076,7 @@
                 { title: "智能批注与逐轮切片", items: ["按轮次定位关键片段", "基于语义块分割避免超长引用导致幻觉", "给出推荐回答和下一轮训练方向"] }
               ],
               [
-                { title: "行为倾向与风格", items: ["动态倾向雷达展示具体环境下的表现特征", "分析个人风格与目标企业文化的适配度", "强制引用本场面试原话作为判断支撑"] }
+                { title: "行为倾向与风格", items: ["动态倾向雷达展示具体环境下的表现特征", "分析个人风格与目标企业文化的适配度", "强制引用本场面试原话作为判断支撑，每个反馈都有迹可循"] }
               ]
             ],
             tags: ["量化评分", "原文证据", "风格评估", "改进建议"]
@@ -1089,13 +1089,13 @@
             tone: "vision",
             columns: [
               [
-                { title: "面试，一定要是黑盒吗？", items: ["企业出于风险控制和保密的考量，通常不会向候选人披露面试细节与评价体系。", "随着求职竞争加剧与 B 端 AI 面试产品广泛落地，候选人往往陷入缺乏反馈的恶性循环。", "当候选人难以复盘自己的面试输出，长期准备就很难沉淀为真实的面试竞争力，甚至会出现面的越多、面得越差的问题。"] }
+                { title: "面试，一定要是黑盒吗？", items: ["企业出于风险控制和保密的考量，通常不会向候选人披露面试细节与评价体系。", "随着求职竞争加剧与 B 端 AI 面试产品广泛落地，候选人往往陷入缺乏反馈的恶性循环。", "当候选人无法复盘自己的面试输出，长期准备就难以沉淀为真实的面试竞争力，甚至会出现面的越多、面得越差的问题。"] }
               ],
               [
-                { title: "代面，能解决什么问题？", items: ["代面 InterviewAgent 是基于 C 端体验开发的 AI as a Service (AIssS)产品，提供面试模拟 + 战略咨询服务。", "我们希望高效拆解面试黑盒，增加求职流程透明度，针对性梳理面试卡点，快速提升面试表现。", "我们既提供开箱即用的应试技巧，也重视长期能力塑造；在面试这条路上，我们坚信技术平权，也很高兴能和大家一起迈出一步。"] }
+                { title: "代面，能解决什么问题？", items: ["代面 InterviewAgent 是基于 C 端体验开发的 AI 即服务（AIaaS）产品，提供面试模拟 + 战略咨询服务。", "我们希望高效拆解面试黑盒，增加求职流程透明度，针对性梳理面试卡点，快速提升面试表现。", "我们既提供开箱即用的应试技巧，也重视长期能力塑造；在面试这条路上，我们坚信技术平权，也很高兴能和大家一起迈出一步。"] }
               ]
             ],
-            tags: ["技术平权", "黑盒拆解", "C端体验", "长期能力"]
+            tags: ["技术平权", "黑盒拆解", "C 端体验", "长期能力"]
           }
         ],
         tech: {
@@ -1124,12 +1124,17 @@
           {
             title: "面试过程",
             text: "系统先由 AI 智囊团规划主题，再由面试执行引擎推进问答，追问路由根据回答状态持续调整路径。",
-            items: ["开场问题来自岗位和简历的强对齐", "回答模糊时进入深挖", "主题覆盖后切换，达到阈值后结束"]
+            items: ["开场问题来自岗位和简历的强对齐", "回答模糊时进入深挖", "主题覆盖后切换，达到阈值后结束"],
+            media: {
+              label: "实机演示",
+              caption: "面试过程实机演示",
+              image: "assets/demo/agentinterview-meeting.gif"
+            }
           },
           {
             title: "报告输出",
             text: "面试结束后输出结构化综合报告，包含维度评分、逐轮点评、原文证据、推荐回答和可执行改进建议。",
-            items: ["扣分必须绑定原文证据", "建议按能力短板组织", "行为倾向以事实表达，不做绝对人格定型"],
+            items: ["扣分必须绑定原文证据", "建议按能力短板组织", "行为倾向以事实表达，不做绝对人格定性，对事不对人"],
             media: {
               label: "实机演示",
               caption: "报告输出实机演示",
@@ -1142,9 +1147,9 @@
             items: ["结构化事实记忆保存高价值证据", "紧凑画像降低上下文成本", "阶段性复盘帮助调整训练计划"]
           },
           {
-            title: "基于 Vercel 平台的 Web 应用交付",
-            text: "代面 InterviewAgent 已通过 Web 应用形式完成交付，全流程模拟面试与战略咨询服务均已上线。",
-            items: ["用户可直接通过浏览器访问产品", "全流程模拟面试已经上线", "战略咨询服务已经上线"]
+            title: "基于 Cloudflare Pages 的 Web 应用交付",
+            text: "代面 InterviewAgent 已通过基于 Cloudflare Pages 的 Web 应用形式完成交付，全流程模拟面试与战略咨询服务均已上线。",
+            items: ["用户可直接通过浏览器访问产品", "全流程模拟面试已经上线", "战略咨询服务已经上线", "可结合 Cloudflare Pages Functions / Workers 承载动态能力"]
           }
         ]
       },
@@ -1164,10 +1169,10 @@
           highlights: {
             kicker: "PRODUCT HIGHLIGHTS",
             title: "Product Highlights",
-            subtitle: "A multi-agent closed loop that brings pressure, follow-ups, review, and long-term improvement into interview training.",
+            subtitle: "A multi-agent loop that turns interview pressure, follow-ups, and review into long-term improvement.",
             signals: [
-              { value: "3", label: "Core modules" },
-              { value: "Multi", label: "Agent planning" },
+              { value: "4", label: "Core modules" },
+              { value: "Multi-Agent", label: "Agent planning" },
               { value: "Evidence", label: "Evidence-based review" }
             ]
           },
@@ -1217,7 +1222,7 @@
             tone: "execution",
             columns: [
               [
-                { title: "Interview Setup", items: ["Target company and role", "JD and personal resume", "Interview type and stress level", "Base model and voice engine options"] },
+                { title: "Interview Setup", items: ["Target company and role", "Job description (JD) and resume", "Interview type and stress level", "Base model and voice engine options"] },
                 { title: "AI Roundtable", items: ["JD analysis extracts core competencies and hard requirements", "Resume probing finds gaps and verifiable evidence", "Strategist and challenger agents form a shared plan"] }
               ],
               [
@@ -1252,10 +1257,10 @@
             tone: "vision",
             columns: [
               [
-                { title: "Does interviewing have to be a black box?", items: ["Companies usually avoid disclosing interview details and evaluation systems because of risk control and confidentiality.", "As hiring competition intensifies and B-side AI interview products become common, candidates can fall into a feedback-poor cycle.", "Without a way to review their own interview output, long-term preparation rarely becomes real interview competitiveness. In the worst case, more interviews can lead to worse performance."] }
+                { title: "Does interviewing have to be a black box?", items: ["Companies usually avoid disclosing interview details and evaluation systems because of risk control and confidentiality.", "As hiring competition intensifies and enterprise-facing AI interview products become common, candidates can fall into a feedback-poor cycle.", "Without a way to review their own interview output, long-term preparation rarely becomes real interview competitiveness. In the worst case, more interviews can lead to worse performance."] }
               ],
               [
-                { title: "What can InterviewAgent solve?", items: ["InterviewAgent is an AI as a Service (AIssS) product designed from the candidate-side experience, combining mock interviews with strategic consulting.", "It aims to efficiently unpack the interview black box, make the job-search process more transparent, identify blockers, and improve performance quickly.", "We provide ready-to-use interview tactics while also caring about long-term capability building. On this road, we believe in technology equity and are glad to take this step with everyone."] }
+                { title: "What can InterviewAgent solve?", items: ["InterviewAgent is an AI-as-a-service (AIaaS) product designed from the candidate-facing experience, combining mock interviews with strategic consulting.", "It aims to efficiently unpack the interview black box, make the job-search process more transparent, identify blockers, and improve performance quickly.", "We provide ready-to-use interview tactics while also caring about long-term capability building. On this road, we believe in technology equity and are glad to take this step with everyone."] }
               ]
             ],
             tags: ["Technology equity", "Black box clarity", "Candidate-first", "Long-term growth"]
@@ -1270,7 +1275,7 @@
         manual: [
           {
             title: "Positioning",
-            text: "InterviewAgent is an AI interview training system for candidates. Multiple agents simulate realistic interview pressure and turn every session into trackable data.",
+            text: "InterviewAgent is an AI interview training system for candidates. Multiple AI agents simulate realistic interview pressure and turn every session into trackable data.",
             items: ["High-pressure rehearsal before real interviews", "Role-specific preparation for target jobs", "Long-term tracking of capability changes and repeated mistakes"]
           },
           {
@@ -1287,7 +1292,12 @@
           {
             title: "Interview Run",
             text: "The AI roundtable plans themes first, then the execution engine drives the interview while the follow-up router adjusts the path.",
-            items: ["Opening questions align role requirements with resume evidence", "Vague answers trigger deeper probing", "Covered topics switch forward and threshold conditions end the run"]
+            items: ["Opening questions align role requirements with resume evidence", "Vague answers trigger deeper probing", "Covered topics switch forward and threshold conditions end the run"],
+            media: {
+              label: "实机演示",
+              caption: "Interview run live demo",
+              image: "assets/demo/agentinterview-meeting.gif"
+            }
           },
           {
             title: "Report Output",
@@ -1305,9 +1315,9 @@
             items: ["Structured fact memory stores high-value evidence", "Compact profiles reduce context cost", "Stage reviews help update the training plan"]
           },
           {
-            title: "Web App Delivery on Vercel",
-            text: "InterviewAgent has been delivered as a web application, with the full mock interview flow and strategic consulting service already live.",
-            items: ["Users can access the product directly in a browser", "The full mock interview flow is live", "The strategic consulting service is live"]
+            title: "Web App Delivery on Cloudflare Pages",
+            text: "InterviewAgent has been delivered as a web application based on Cloudflare Pages, with the full mock interview flow and strategic consulting service already live.",
+            items: ["Users can access the product directly in a browser", "The full mock interview flow is live", "The strategic consulting service is live", "Cloudflare Pages Functions / Workers can support dynamic capabilities"]
           }
         ]
       }
@@ -1324,8 +1334,8 @@
       highlights: {
         kicker: "PRODUCT HIGHLIGHTS",
         signals: [
-          { value: "3", label: "核心能力模块" },
-          { value: "Multi", label: "Agent 协同规划" },
+          { value: "1+1", label: "核心能力模块" },
+          { value: "Multi-Agent", label: "Agent 协同规划" },
           { value: "Evidence", label: "证据驱动评估" }
         ]
       },
@@ -1446,14 +1456,14 @@
       en: {
         "流程图重绘 - 面试链路与战略咨询记忆链路": "Flowchart Redesign - Interview and Strategy Memory Flows",
         "面试链路与战略咨询记忆链路": "Interview Flow and Strategy Memory Flow",
-        "基于原始两个流程图重绘为 HTML 内联 SVG，保留节点、分支、回路、图例和原有说明，同时统一节点配色、连接线和箭头样式。": "Redrawn as inline SVG in HTML while preserving the original nodes, branches, loops, legends, and descriptions, with refined colors, connectors, and arrow styling.",
+        "基于原始两个流程图重绘为 HTML 内联 SVG，保留节点、分支、回路、视觉标识和原有说明，同时统一节点配色、连接线和箭头样式。": "Redrawn as inline SVG in HTML while preserving the original nodes, branches, loops, visual keys, and descriptions, with refined colors, connectors, and arrow styling.",
         "面试链路": "Interview Flow",
         "战略咨询记忆链路": "Strategy Memory Flow",
         "面试链路流程图": "Interview Flow Diagram",
         "从用户登录到面试报告生成的完整面试流程，包括 AI 智囊团设计、动态追问和报告生成环节。": "End-to-end interview workflow from login to report generation, including the AI think tank, adaptive follow-up, and report output.",
         "战略咨询记忆链路流程图（含 LangGraph 内部节点）": "Strategy Consulting Memory Flow Diagram (with LangGraph Nodes)",
         "战略咨询完整链路，包含用户历史读取、记忆处理、LangGraph Agent 内部技能选择与 Intent/Context/Reply 节点编排，以及咨询结束后的记忆沉淀。": "Full strategy consulting flow covering history retrieval, memory processing, LangGraph skill routing, Intent/Context/Reply orchestration, and post-consultation memory updates.",
-        "从用户登录到面试报告生成的完整面试流程，包括AI智囊团设计、动态追问和报告生成环节": "End-to-end interview workflow from login to report generation, including AI think tank design, adaptive follow-up, and report output.",
+        "从用户登录到面试报告生成的完整面试流程，包括 AI 智囊团设计、动态追问和报告生成环节": "End-to-end interview workflow from login to report generation, including AI think tank design, adaptive follow-up, and report output.",
         "战略咨询完整链路，包含用户历史读取、记忆处理、LangGraph Agent 内部技能选择与 Intent/Context/Reply 节点编排，以及咨询结束后的记忆沉淀": "Full strategy consulting flow covering user history retrieval, memory processing, LangGraph internal skill selection, Intent/Context/Reply orchestration, and memory consolidation.",
         "用户设置": "User Setup",
         "面试执行": "Interview Execution",
@@ -1464,7 +1474,6 @@
         "记忆处理": "Memory Processing",
         "LangGraph 战略咨询 Agent": "LangGraph Strategy Agent",
         "记忆沉淀": "Memory Update",
-        "图例": "Legend",
         "用户操作": "User Action",
         "AI 智囊团": "AI Think Tank",
         "历史读取": "History Read",
@@ -1475,7 +1484,7 @@
         "填写岗位信息": "Enter role details",
         "公司、岗位、JD、简历": "Company, role, JD, resume",
         "选择面试配置": "Choose interview setup",
-        "类型、难度、模式、AI模型、语音": "Type, level, mode, model, voice",
+        "类型、难度、模式、AI 模型、语音": "Type, level, mode, model, voice",
         "JD 解构官": "JD Analyst",
         "简历深挖官": "Resume Analyst",
         "面试策略官": "Interview Strategist",
@@ -1485,7 +1494,7 @@
         "进入正式面试": "Start formal interview",
         "AI 面试官提问": "AI interviewer asks",
         "用户语音或文本作答": "User answers by voice or text",
-        "ASR 转写与提交锁": "ASR transcript and submit lock",
+        "ASR 语音转写与提交锁": "ASR speech-to-text and submit lock",
         "追问 Agent 判断": "Follow-up decision",
         "深挖追问": "Deep follow-up",
         "回答值得深挖": "Answer merits probing",
@@ -1566,7 +1575,7 @@
         prefix: "interview-flow",
         height: 1470,
         title: "面试链路流程图",
-        desc: "从用户登录到面试报告生成的完整面试流程，包括AI智囊团设计、动态追问和报告生成环节",
+        desc: "从用户登录到面试报告生成的完整面试流程，包括 AI 智囊团设计、动态追问和报告生成环节",
         spacers: [
           { from: 296, amount: 30 },
           { from: 518, amount: 30 },
@@ -1621,7 +1630,7 @@
           b("user", 240, 30, 200, 44, [t("用户登录并进入首页", 52)]),
           b("user", 270, 90, 140, 44, [t("创建面试", 112)]),
           b("user", 220, 150, 240, 56, [t("填写岗位信息", 170), t("公司、岗位、JD、简历", 190, "sub")]),
-          b("user", 220, 222, 240, 56, [t("选择面试配置", 242), t("类型、难度、模式、AI模型、语音", 262, "sub")]),
+          b("user", 220, 222, 240, 56, [t("选择面试配置", 242), t("类型、难度、模式、AI 模型、语音", 262, "sub")]),
           b("think", 52, 328, 130, 44, [t("JD 解构官", 350)]),
           b("think", 198, 328, 130, 44, [t("简历深挖官", 350)]),
           b("think", 344, 328, 130, 44, [t("面试策略官", 350)]),
@@ -1631,7 +1640,7 @@
           b("agent", 250, 524, 180, 44, [t("进入正式面试", 546)]),
           b("agent", 245, 584, 190, 44, [t("AI 面试官提问", 606)]),
           b("agent", 230, 644, 220, 44, [t("用户语音或文本作答", 666)]),
-          b("agent", 230, 704, 220, 44, [t("ASR 转写与提交锁", 726)]),
+          b("agent", 230, 704, 220, 44, [t("ASR 语音转写与提交锁", 726)]),
           diamond("route", 260, 760, 160, 64, [t("追问 Agent 判断", 792, "title", 13)]),
           b("route", 60, 846, 140, 44, [t("深挖追问", 860), t("回答值得深挖", 878, "sub")]),
           b("route", 270, 846, 140, 44, [t("切换主题", 860), t("当前主题已覆盖", 878, "sub")]),
@@ -1645,15 +1654,14 @@
           label("↻ 返回提问", 110, 736, { anchor: "middle", size: 12, opacity: 0.78, className: "edge-label" })
         ],
         legend: {
-          x: 40,
           y: 1210,
-          title: "图例",
+          gap: 18,
           items: [
-            { theme: "user", x: 0, label: "用户操作" },
-            { theme: "think", x: 110, label: "AI 智囊团" },
-            { theme: "agent", x: 250, label: "面试执行" },
-            { theme: "route", x: 380, label: "动态路由" },
-            { theme: "report", x: 520, label: "报告输出" }
+            { theme: "user", label: "用户操作" },
+            { theme: "think", label: "AI 智囊团" },
+            { theme: "agent", label: "面试执行" },
+            { theme: "route", label: "动态路由" },
+            { theme: "report", label: "报告输出" }
           ]
         }
       },
@@ -1776,15 +1784,15 @@
           label("总结", 648, 996, { anchor: "end", size: 12, opacity: 0.72, className: "edge-label" })
         ],
         legend: {
-          x: 42,
           y: 1460,
+          gap: 14,
           items: [
-            { theme: "user", x: 0, label: "用户操作" },
-            { theme: "read", x: 120, label: "历史读取" },
-            { theme: "think", x: 260, label: "记忆处理" },
-            { theme: "agent", x: 0, y: 26, label: "Agent 节点" },
-            { theme: "route", x: 150, y: 26, label: "意图路由" },
-            { theme: "report", x: 320, y: 26, label: "记忆沉淀" }
+            { theme: "user", label: "用户操作" },
+            { theme: "read", label: "历史读取" },
+            { theme: "think", label: "记忆处理" },
+            { theme: "agent", label: "Agent 节点" },
+            { theme: "route", label: "意图路由" },
+            { theme: "report", label: "记忆沉淀" }
           ]
         }
       }
@@ -2046,29 +2054,42 @@
       });
     }
 
-    function drawLegend(svg, prefix, legendSpec, diagram) {
-      const group = svgEl("g", { transform: `translate(${legendSpec.x}, ${sy(diagram, legendSpec.y)})` });
-      if (legendSpec.title) {
-        group.appendChild(svgEl("text", {
-          x: 0,
-          y: 0,
-          fill: neutral.label,
-          "font-size": 12,
-          "font-weight": 600,
-          className: "legend-text"
-        }));
-        group.lastChild.textContent = tr(legendSpec.title);
-      }
+    function estimateSvgTextWidth(text, fontSize = 11) {
+      return [...text].reduce((sum, char) => sum + (char.charCodeAt(0) > 255 ? fontSize : fontSize * 0.55), 0);
+    }
 
-      const baseY = legendSpec.title ? 10 : 0;
-      legendSpec.items.forEach((item) => {
+    function drawLegend(svg, prefix, legendSpec, diagram) {
+      const swatch = legendSpec.swatchSize || 12;
+      const textGap = legendSpec.textGap || 6;
+      const itemGap = legendSpec.gap || 16;
+      const fontSize = legendSpec.fontSize || 11;
+      const items = legendSpec.items.map((item) => {
+        const text = tr(item.label);
+        return {
+          ...item,
+          text,
+          width: swatch + textGap + estimateSvgTextWidth(text, fontSize)
+        };
+      });
+      const totalWidth = items.reduce((sum, item, index) => sum + item.width + (index ? itemGap : 0), 0);
+      const viewWidth = diagram.width || 680;
+      const margin = legendSpec.margin || 24;
+      const scale = Math.min(1, (viewWidth - margin * 2) / totalWidth);
+      const startX = (viewWidth - totalWidth * scale) / 2;
+      const group = svgEl("g", {
+        className: "flow-legend",
+        transform: `translate(${startX}, ${sy(diagram, legendSpec.y)}) scale(${scale})`
+      });
+
+      let cursorX = 0;
+      items.forEach((item, index) => {
+        if (index) cursorX += itemGap;
         const theme = PALETTE[item.theme];
-        const itemY = baseY + (item.y || 0);
         group.appendChild(svgEl("rect", {
-          x: item.x,
-          y: itemY,
-          width: 14,
-          height: 14,
+          x: cursorX,
+          y: 0,
+          width: swatch,
+          height: swatch,
           rx: 3,
           fill: `url(#${prefix}-${item.theme})`,
           stroke: theme.stroke,
@@ -2076,14 +2097,15 @@
           className: "legend-swatch"
         }));
         group.appendChild(svgEl("text", {
-          x: item.x + (legendSpec.title ? 22 : 20),
-          y: itemY + (legendSpec.title ? 12 : 11),
+          x: cursorX + swatch + textGap,
+          y: swatch - 1,
           fill: neutral.label,
-          "font-size": 12,
+          "font-size": fontSize,
           "font-weight": 500,
           className: "legend-text"
         }));
-        group.lastChild.textContent = tr(item.label);
+        group.lastChild.textContent = item.text;
+        cursorX += item.width;
       });
       svg.appendChild(group);
     }
