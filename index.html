@@ -322,12 +322,24 @@
 
     .content-stage {
       padding-top: 30px;
-      animation: sectionIn 220ms ease both;
     }
 
-    @keyframes sectionIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
+    .app-shell.page-switch-next {
+      animation: pageSlideNext 360ms cubic-bezier(0.22, 0.72, 0.22, 1) both;
+    }
+
+    .app-shell.page-switch-prev {
+      animation: pageSlidePrev 360ms cubic-bezier(0.22, 0.72, 0.22, 1) both;
+    }
+
+    @keyframes pageSlideNext {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pageSlidePrev {
+      0% { opacity: 0; transform: translateY(-10px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
 
     .module-stack {
@@ -793,7 +805,8 @@
       padding: 0 14px 14px;
     }
 
-    .manual-media-panel img {
+    .manual-media-panel img,
+    .manual-media-panel video {
       display: block;
       width: 100%;
       height: auto;
@@ -1117,8 +1130,9 @@
             media: {
               label: "实机演示",
               caption: "输入配置实机演示",
-              image: "assets/demo/agentinterview-setting.gif",
-              open: true
+              video: "assets/demo/agentinterview-setting.mp4",
+              open: true,
+              preload: "auto"
             }
           },
           {
@@ -1128,7 +1142,7 @@
             media: {
               label: "实机演示",
               caption: "面试过程实机演示",
-              image: "assets/demo/agentinterview-meeting.gif"
+              video: "assets/demo/agentinterview-meeting.mp4"
             }
           },
           {
@@ -1138,13 +1152,18 @@
             media: {
               label: "实机演示",
               caption: "报告输出实机演示",
-              image: "assets/demo/agentinterview-report.gif"
+              video: "assets/demo/agentinterview-report.mp4"
             }
           },
           {
             title: "持续改进",
             text: "报告和咨询结论会沉淀为长期记忆摘要，下一次训练或咨询可以继续参考，形成持续优化闭环。",
-            items: ["结构化事实记忆保存高价值证据", "紧凑画像降低上下文成本", "阶段性复盘帮助调整训练计划"]
+            items: ["结构化事实记忆保存高价值证据", "紧凑画像降低上下文成本", "阶段性复盘帮助调整训练计划"],
+            media: {
+              label: "实机演示",
+              caption: "持续改进实机演示",
+              video: "assets/demo/agentinterview-discussion.mp4"
+            }
           },
           {
             title: "基于 Cloudflare Pages 的 Web 应用交付",
@@ -1285,8 +1304,9 @@
             media: {
               label: "实机演示",
               caption: "Input setup live demo",
-              image: "assets/demo/agentinterview-setting.gif",
-              open: true
+              video: "assets/demo/agentinterview-setting.mp4",
+              open: true,
+              preload: "auto"
             }
           },
           {
@@ -1296,7 +1316,7 @@
             media: {
               label: "实机演示",
               caption: "Interview run live demo",
-              image: "assets/demo/agentinterview-meeting.gif"
+              video: "assets/demo/agentinterview-meeting.mp4"
             }
           },
           {
@@ -1306,13 +1326,18 @@
             media: {
               label: "实机演示",
               caption: "Report output live demo",
-              image: "assets/demo/agentinterview-report.gif"
+              video: "assets/demo/agentinterview-report.mp4"
             }
           },
           {
             title: "Continuous Improvement",
             text: "Reports and consulting conclusions are compressed into long-term memory summaries, so the next training or consulting session can continue from them.",
-            items: ["Structured fact memory stores high-value evidence", "Compact profiles reduce context cost", "Stage reviews help update the training plan"]
+            items: ["Structured fact memory stores high-value evidence", "Compact profiles reduce context cost", "Stage reviews help update the training plan"],
+            media: {
+              label: "实机演示",
+              caption: "Continuous improvement live demo",
+              video: "assets/demo/agentinterview-discussion.mp4"
+            }
           },
           {
             title: "Web App Delivery on Cloudflare Pages",
@@ -1360,6 +1385,18 @@
     let currentLang = "zh";
     let activeSection = "highlights";
     let expandedHighlights = new Set([0, 1, 2, 3]);
+    const sectionOrder = ["highlights", "tech", "manual"];
+    const pagingDistanceThreshold = 900;
+    const pagingDurationThreshold = 950;
+    const pagingDurationMinDistance = 420;
+    const pagingStaleMs = 900;
+    const pagingEventCap = 70;
+    const pagingLockMs = 950;
+    let pagingLockedUntil = 0;
+    let pagingIntent = { direction: "", distance: 0, startedAt: 0, lastAt: 0 };
+    let touchStartY = 0;
+    let touchLatestY = 0;
+    let touchPagingFromInteractive = false;
 
     function copy() {
       return i18n[currentLang];
@@ -2160,9 +2197,7 @@
 
       nav.querySelectorAll("[data-section]").forEach((button) => {
         button.addEventListener("click", () => {
-          activeSection = button.dataset.section;
-          renderApp();
-          window.scrollTo({ top: 0, behavior: "smooth" });
+          goToSection(button.dataset.section);
         });
       });
     }
@@ -2193,6 +2228,7 @@
         return;
       }
       main.innerHTML = renderManual();
+      bindManualMediaToggles();
     }
 
     function renderHighlights() {
@@ -2311,11 +2347,17 @@
 
     function renderManualMedia(block) {
       if (!block.media) return "";
+      const preload = block.media.preload || "metadata";
+      const media = block.media.video
+        ? `<video controls muted loop playsinline preload="${escapeHTML(preload)}" aria-label="${escapeHTML(block.media.caption)}">
+            <source src="${escapeHTML(block.media.video)}" type="video/mp4">
+          </video>`
+        : `<img src="${escapeHTML(block.media.image)}" alt="${escapeHTML(block.media.caption)}" loading="lazy">`;
       return `
         <details class="manual-media-toggle"${block.media.open ? " open" : ""}>
           <summary>${escapeHTML(block.media.label)}</summary>
           <figure class="manual-media-panel">
-            <img src="${escapeHTML(block.media.image)}" alt="${escapeHTML(block.media.caption)}" loading="lazy">
+            ${media}
           </figure>
         </details>
       `;
@@ -2337,6 +2379,165 @@
           `).join("")}
         </div>
       `;
+    }
+
+    function prefersReducedMotion() {
+      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    }
+
+    function scrollToSectionTop() {
+      window.scrollTo({ top: 0, behavior: "auto" });
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, behavior: "auto" });
+      });
+    }
+
+    function triggerPageTransition(direction) {
+      if (prefersReducedMotion()) return;
+      const shell = document.querySelector(".app-shell");
+      if (!shell) return;
+      shell.classList.remove("page-switch-next", "page-switch-prev");
+      void shell.offsetWidth;
+      shell.classList.add(direction === "prev" ? "page-switch-prev" : "page-switch-next");
+      window.setTimeout(() => {
+        shell.classList.remove("page-switch-next", "page-switch-prev");
+      }, 420);
+    }
+
+    function goToSection(sectionKey, direction) {
+      if (!sectionOrder.includes(sectionKey)) return;
+      const previousIndex = sectionOrder.indexOf(activeSection);
+      const nextIndex = sectionOrder.indexOf(sectionKey);
+      const transitionDirection = direction || (nextIndex < previousIndex ? "prev" : "next");
+      if (sectionKey === activeSection) {
+        scrollToSectionTop();
+        return;
+      }
+
+      scrollToSectionTop();
+      activeSection = sectionKey;
+      renderApp();
+      pagingLockedUntil = performance.now() + pagingLockMs;
+      resetPagingIntent();
+      scrollToSectionTop();
+      triggerPageTransition(transitionDirection);
+    }
+
+    function bindManualMediaToggles() {
+      const playManualVideo = (video) => {
+        const playRequest = video.play();
+        if (playRequest && typeof playRequest.catch === "function") {
+          playRequest.catch(() => {});
+        }
+      };
+
+      document.querySelectorAll(".manual-media-toggle").forEach((toggle) => {
+        const video = toggle.querySelector("video");
+        if (!video) return;
+
+        toggle.addEventListener("toggle", () => {
+          if (toggle.open) {
+            playManualVideo(video);
+            return;
+          }
+
+          video.pause();
+          try {
+            video.currentTime = 0;
+          } catch (error) {}
+        });
+
+        if (toggle.open) {
+          playManualVideo(video);
+        }
+      });
+    }
+
+    function isInteractiveScrollTarget(target) {
+      return Boolean(target.closest?.("video, audio, button, summary, a, input, textarea, select, [contenteditable='true']"));
+    }
+
+    function resetPagingIntent() {
+      pagingIntent = { direction: "", distance: 0, startedAt: 0, lastAt: 0 };
+    }
+
+    function getPagingTarget(direction, currentIndex) {
+      if (direction === "next" && currentIndex < sectionOrder.length - 1) {
+        return sectionOrder[currentIndex + 1];
+      }
+      if (direction === "prev" && currentIndex > 0) {
+        return sectionOrder[currentIndex - 1];
+      }
+      return "";
+    }
+
+    function recordPagingIntent(direction, deltaY) {
+      const now = performance.now();
+      if (
+        pagingIntent.direction !== direction ||
+        now - pagingIntent.lastAt > pagingStaleMs
+      ) {
+        pagingIntent = { direction, distance: 0, startedAt: now, lastAt: now };
+      }
+
+      pagingIntent.distance += Math.min(Math.abs(deltaY), pagingEventCap);
+      pagingIntent.lastAt = now;
+
+      const duration = now - pagingIntent.startedAt;
+      return (
+        pagingIntent.distance >= pagingDistanceThreshold ||
+        (duration >= pagingDurationThreshold && pagingIntent.distance >= pagingDurationMinDistance)
+      );
+    }
+
+    function handleSectionPaging(deltaY, eventTarget, event) {
+      if (Math.abs(deltaY) < 8) return;
+      if (performance.now() < pagingLockedUntil) return;
+      if (eventTarget && isInteractiveScrollTarget(eventTarget)) return;
+
+      const scrollRoot = document.scrollingElement || document.documentElement;
+      const atTop = window.scrollY <= 8;
+      const atBottom = window.scrollY + window.innerHeight >= scrollRoot.scrollHeight - 8;
+      const currentIndex = sectionOrder.indexOf(activeSection);
+      const direction = deltaY > 0 ? "next" : "prev";
+      const atPagingBoundary = direction === "next" ? atBottom : atTop;
+      const targetSection = getPagingTarget(direction, currentIndex);
+
+      if (!atPagingBoundary || !targetSection) {
+        resetPagingIntent();
+        return;
+      }
+
+      if (recordPagingIntent(direction, deltaY)) {
+        event?.preventDefault();
+        goToSection(targetSection, direction);
+      } else {
+        event?.preventDefault();
+      }
+    }
+
+    function bindSectionPaging() {
+      window.addEventListener("wheel", (event) => {
+        handleSectionPaging(event.deltaY, event.target, event);
+      }, { passive: false });
+
+      window.addEventListener("touchstart", (event) => {
+        touchStartY = event.touches[0]?.clientY || 0;
+        touchLatestY = touchStartY;
+        touchPagingFromInteractive = isInteractiveScrollTarget(event.target);
+      }, { passive: true });
+
+      window.addEventListener("touchmove", (event) => {
+        const nextY = event.touches[0]?.clientY || touchLatestY;
+        const deltaY = touchLatestY - nextY;
+        touchLatestY = nextY;
+        if (touchPagingFromInteractive) return;
+        handleSectionPaging(deltaY, null, event);
+      }, { passive: false });
+
+      window.addEventListener("touchend", (event) => {
+        if (!touchPagingFromInteractive) resetPagingIntent();
+      }, { passive: false });
     }
 
     document.getElementById("global-lang-btn").addEventListener("click", () => {
@@ -2378,7 +2579,10 @@
       document.documentElement.style.setProperty("--cursor-opacity", "0");
     });
 
-    document.addEventListener("DOMContentLoaded", renderApp);
+    document.addEventListener("DOMContentLoaded", () => {
+      renderApp();
+      bindSectionPaging();
+    });
   </script>
 </body>
 </html>
